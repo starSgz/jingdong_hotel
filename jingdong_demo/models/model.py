@@ -11,7 +11,7 @@ class UserModel(db.Model, BaseModel):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)  # 自增ID
     username = db.Column(db.String(12), index=True, unique=True)  # 用户名
-    password_hash = db.Column(db.String(128),nullable=False)  # 密码 密文
+    password_hash = db.Column(db.String(512),nullable=False)  # 密码 密文
     sex = db.Column(db.Boolean, default=True)  # 性别
     age = db.Column(db.SmallInteger, default=18)  # 年龄 默认18
     email = db.Column(db.String(50), unique=True)  # 邮箱
@@ -36,7 +36,7 @@ class UserModel(db.Model, BaseModel):
 
     # 显示对象中的信息
     def __repr__(self):
-        return "user object: name=%s" % self.user_name
+        return "user object: name=%s" % self.username
 
 
 # python manage.py db init 初始化

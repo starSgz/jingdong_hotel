@@ -1,0 +1,58 @@
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		login2
+	</title>
+	<script src="../../static/js/bootstrap.min.js"></script>
+	<script src="../../static/js/jquery.min.js"></script>
+	<script src="../../static/js/common.js"></script>
+	<link type="text/css" href="css/login.css" rel="stylesheet">
+</head>
+
+<body>
+	<h1>6666</h1>
+	<img id="captchaImage" src="/data:image/jpg;base64," onclick="refreshcode(this);" />
+	<button id="t1"  onclick="logout();" ></button>
+</body>
+<script type="text/javascript">
+	 localStorage.setItem("token", "{{token}}");
+	$(function () {
+		refreshcode()
+	});
+	function refreshcode(ths) {
+		// alert('点击了图片');
+		var url = "/captchaImage";
+		$.ajax({
+			url: url,
+			type: "GET",
+			data: {},
+			dataType: 'JSON',
+			success: function (res) {
+				console.log(res);
+				var img_base = 'data:image/jpg;base64,' + res.img
+				$("#captchaImage").attr("src", img_base);
+			}
+		});
+	};
+
+	// 执行请求就拦截掉
+function logout() {
+		var url = "/logout";
+		$.ajax({
+			url: url,
+			type: "GET",
+			data: {},
+			dataType: 'JSON',
+			success: function (res) {
+				console.log(res);
+				// localStorage.clear();//全部删除
+				delete localStorage['token'];//删除单个
+				location.href="/login";
+			}
+		});
+	};
+</script>
+
+</html>
