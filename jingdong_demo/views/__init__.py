@@ -1,13 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
-from .main import main
+from .Charts import charts
 from .User import user
 
 #添加蓝图
 blueprint_config = [
-    (main, ''),
     (user, ''),
+    (charts, ''),
 ]
 
 

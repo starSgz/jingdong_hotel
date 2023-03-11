@@ -117,7 +117,6 @@ def logout():
         return jsonify({'code':500,'msg':'注销失败'})
 
 
-
 @user.route('/test',methods=['GET','POST'])
 def test():
     return render_template('user/test.html')
@@ -126,3 +125,8 @@ def test():
 @user.route('/test1',methods=['GET','POST'])
 def test1():
     return jsonify({"code":200})
+
+
+@user.route('/')
+def index():
+    return render_template('user/login.html')

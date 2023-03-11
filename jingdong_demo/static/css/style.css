@@ -1,237 +1,95 @@
+@charset "utf-8";
+/* CSS Document */
+*{
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box}
+*,body{padding:0px;	margin:0px;font-family: "微软雅黑";}
+body{color:#fff;font-size: 16px; background: #033c76 url(../images/bg.png) no-repeat; background-size: 100% 100%;
+}
+@font-face{font-family:electronicFont;src:url(../font/DS-DIGIT.TTF)}
+html,body{min-height: 100%;}
+li{ list-style-type:none;}
+table{}
+i{ margin:0px; padding:0px; text-indent:0px;}
+img{ border:none; max-width: 100%;}
+a{ text-decoration:none; color:#fff;}
+a.active,a:focus{ outline:none!important; text-decoration:none;}
+ol,ul,p,h1,h2,h3,h4,h5,h6{ padding:0; margin:0}
+a:hover{ color:#06c; text-decoration: none!important}
+.clearfix:after, .clearfix:before {display: table;content: " "}
+ .clearfix:after {clear: both}
+.pulll_left{float:left;}
+.pulll_right{float:right;}
+i{font-style: normal;}
+.text-w{color: #ffe400}
+.text-d{color: #ff6316}
+.text-s{color: #14e144}
+.text-b{color: #07e5ff}
 
-    /* 清除浏览器默认边距，
-使边框和内边距的值包含在元素的width和height内 */
+.head{position: relative; height: 90px; margin: 0 15px; padding-right: 60px;}
+.head h1{  font-size: 30px; letter-spacing: -2px; text-align: center; line-height: 90px; padding-right: 55px; color: #daf9ff;}
+.head .menu{}
+.head .menu ul{ font-size: 0;}
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+.head .menu li{ display: inline-block; position: relative;margin: 30px 15px;;}
+.head .menu li a{ display: block; font-size: 18px; color: #fff; line-height: 30px; padding: 0 10px; }
+.head .time{position: absolute; right: 0; line-height: 90px; top: 0;}
+
+.menu li:before,
+.menu li:after{ position:absolute; width:10px; height:5px;opacity: .4; content: "";  border-top: 2px solid #02a6b5; top: -1px;border-radius: 2px;}
+.menu li:before,.menu li a:before{border-left: 2px solid #02a6b5;left: -1px;}
+.menu li:after,.menu li a:after{border-right: 2px solid #02a6b5; right: -1px;}
+.menu li a{ position:relative;}
+.menu li a:before,
+.menu li a:after{ position:absolute; width:10px; height:5px; opacity: .4;  content: "";border-bottom: 2px solid #02a6b5; bottom:-1px;border-radius: 2px;}
+
+.head .menu li a:hover{ color: #f4e925;}
+.menu li a:hover:before,
+.menu li a:hover:after,
+.menu li:hover:before,
+.menu li:hover:after{border-color:  #f4e925; opacity: 1;}
+
+.mainbox{padding: 0px 10px;}
+.nav1{margin-left: -6px; margin-right:-6px;}
+.nav1>li{padding:0 6px; float: left;}
+
+.box{ border:1px solid rgba(7,118,181,.5); box-shadow:inset 0 0 10px rgba(7,118,181,.4); margin-bottom: 12px; position: relative;}
+.tit{ padding: 10px 10px 10px 25px;border-bottom:1px solid rgba(7,118,181,.7);font-size: 16px; font-weight: 500; position: relative;}
+.tit:before,.tit01:before{position: absolute; content: ""; width: 6px; height: 6px; background: rgba(22,214,255,.9);box-shadow: 0 0 5px rgba(22,214,255,.9); border-radius: 10px; left: 10px; top: 18px;}
+
+.tit:after,.box:before{ width: 100%; height: 1px; content: ""; position: absolute; left: 0; bottom:-1px; background:linear-gradient(to right,#076ead,#4ba6e0,#076ead); box-shadow: 0 0 5px rgba(131,189,227,1); opacity: .6}
+.box:before{top: -1px;}
+
+.boxnav{padding: 10px;}
+.tit01{font-size: 16px; font-weight: 500; position: relative; padding-left: 15px;}
+.tit01:before{ left: 3px; top: 8px;}
+
+.mapc{background: url(../images/bg3.png) no-repeat center center; background-size: 100% 100%}
+.map{position: relative; height: 100%;}
+.map img{}
+.mapnav{position: absolute;z-index: 10;}
+
+
+.yqlist li{float: left; width: 50%; padding:10px 0; text-align: center;}
+.yq{width:100px; height: 100px; margin: 0 auto  5px auto;  position: relative; display: flex; justify-content: center;align-items: center; font-size: 30px;font-family:electronicFont;color: #fff32b;}
+.yqlist li span{opacity: .6; font-size: 14px;}
+
+.yq:before{position: absolute; width: 100%; height: 100%; content: ""; background: url(../images/img1.png) center center; border-radius: 100px; background-size: 100% 100%; opacity:.3;
+	left:0; top: 0; animation: myfirst2 15s infinite linear;}
+
+.yq:after{position: absolute; width: 86%; background: url(../images/img2.png) center center; border-radius: 100px; background-size: 100% 100%;  opacity:.3;
+	height: 86%; content: "";   left:7%; top: 7%; animation: myfirst 15s infinite linear;}
+
+
+@keyframes myfirst
+{
+to { transform: rotate(-360deg)}
+}
+@keyframes myfirst2
+{
+to { transform: rotate(360deg)}
 }
 
-/* 使用flex布局，让内容垂直和水平居中 */
 
-section {
-    /* 相对定位 */
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    /* linear-gradient() 函数用于创建一个表示两种或多种颜色线性渐变的图片 */
-    background: linear-gradient(to bottom, #f1f4f9, #dff1ff);
-}
-
-/* 背景颜色 */
-
-section .color {
-    /* 绝对定位 */
-    position: absolute;
-    /* 使用filter(滤镜) 属性，给图像设置高斯模糊*/
-    filter: blur(200px);
-}
-
-/* :nth-child(n) 选择器匹配父元素中的第 n 个子元素 */
-
-section .color:nth-child(1) {
-    top: -350px;
-    width: 600px;
-    height: 600px;
-    background: #ff359b;
-}
-
-section .color:nth-child(2) {
-    bottom: -150px;
-    left: 100px;
-    width: 500px;
-    height: 500px;
-    background: #fffd87;
-}
-
-section .color:nth-child(3) {
-    bottom: 50px;
-    right: 100px;
-    width: 500px;
-    height: 500px;
-    background: #00d2ff;
-}
-
-.box {
-    position: relative;
-}
-
-/* 背景圆样式 */
-
-.box .circle {
-    position: absolute;
-    background: rgba(255, 255, 255, 0.1);
-    /* backdrop-filter属性为一个元素后面区域添加模糊效果 */
-    backdrop-filter: blur(5px);
-    box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-right: 1px solid rgba(255, 255, 255, 0.2);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    /* 使用filter(滤镜) 属性，改变颜色。
-    hue-rotate(deg)  给图像应用色相旋转
-    calc() 函数用于动态计算长度值
-    var() 函数调用自定义的CSS属性值x*/
-    filter: hue-rotate(calc(var(--x) * 70deg));
-    /* 调用动画animate，需要10s完成动画，
-    linear表示动画从头到尾的速度是相同的，
-    infinite指定动画应该循环播放无限次*/
-    animation: animate 10s linear infinite;
-    /* 动态计算动画延迟几秒播放 */
-    animation-delay: calc(var(--x) * -1s);
-}
-
-/* 背景圆动画 */
-
-@keyframes animate {
-    0%, 100%{
-        transform: translateY(-50px);
-    }
-    50% {
-        transform: translateY(50px);
-    }
-}
-
-.box .circle:nth-child(1) {
-    top: -50px;
-    right: -60px;
-    width: 100px;
-    height: 100px;
-}
-
-.box .circle:nth-child(2) {
-    top: 150px;
-    left: -100px;
-    width: 120px;
-    height: 120px;
-    z-index: 2;
-}
-
-.box .circle:nth-child(3) {
-    bottom: 50px;
-    right: -60px;
-    width: 80px;
-    height: 80px;
-    z-index: 2;
-}
-
-.box .circle:nth-child(4) {
-    bottom: -80px;
-    left: 100px;
-    width: 60px;
-    height: 60px;
-}
-
-.box .circle:nth-child(5) {
-    top: -80px;
-    left: 140px;
-    width: 60px;
-    height: 60px;
-}
-
-/* 登录框样式 */
-
-.container {
-    position: relative;
-    width: 480px;
-    min-height: 400px;
-    background: rgba(255, 255, 255, 0.1);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    backdrop-filter: blur(5px);
-    box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-right: 1px solid rgba(255, 255, 255, 0.2);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.form {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    padding: 50px;
-}
-
-/* 登录标题样式 */
-
-.form h2 {
-    position: relative;
-    color: #fff;
-    font-size: 24px;
-    font-weight: 600;
-    letter-spacing: 5px;
-    margin-bottom: 30px;
-    cursor: pointer;
-}
-
-/* 登录标题的下划线样式 */
-
-.form h2::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -10px;
-    width: 0px;
-    height: 3px;
-    background: #fff;
-    transition: 0.5s;
-}
-
-.form h2:hover:before {
-    width: 53px;
-}
-
-.form .inputBox {
-    width: 100%;
-    margin-top: 20px;
-}
-
-/* 输入框样式 */
-
-.form .inputBox input {
-    width: 100%;
-    padding: 10px 20px;
-    background: rgba(255, 255, 255, 0.2);
-    outline: none;
-    border: none;
-    border-radius: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-right: 1px solid rgba(255, 255, 255, 0.2);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    font-size: 16px;
-    letter-spacing: 1px;
-    color: #fff;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-}
-
-.form .inputBox input::placeholder {
-    color: #fff;
-}
-
-/* 登录按钮样式 */
-
-.form .inputBox input[type="submit"] {
-    background: #fff;
-    color: #666;
-    margin-bottom: 20px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.forget {
-    margin-top: 6px;
-    color: #fff;
-    letter-spacing: 1px;
-}
-
-.forget a {
-    color: #fff;
-    font-weight: 600;
-    text-decoration: none;
-}
 

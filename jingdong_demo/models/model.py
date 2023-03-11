@@ -38,6 +38,27 @@ class UserModel(db.Model, BaseModel):
     def __repr__(self):
         return "user object: name=%s" % self.username
 
+class JingDongModel(db.Model, BaseModel):
+    __tablename__ = 'jingdong'
+    sid = db.Column(db.Integer, primary_key=True)
+    address = db.Column(db.String(255),comment='地址')
+    name = db.Column(db.String(255),comment='店名')
+    cityName = db.Column(db.String(255),comment='城市')
+    districtName = db.Column(db.String(255),comment='区域')
+    brandName = db.Column(db.String(255),comment='品牌名称')
+    totalComments = db.Column(db.String(255),comment='评论数')
+    score = db.Column(db.String(1000),comment='评分')
+    location = db.Column(db.String(255),comment='lat纬度，lon经度 ')
+    price = db.Column(db.String(255),comment='价格')
+    coverImageUrl = db.Column(db.String(255),comment='封面图片')
+    amenities = db.Column(db.String(255),comment='设施')
+    detailPage_url = db.Column(db.String(255),comment='详情页地址')
+    grade = db.Column(db.String(255),comment='星级')
+    checkInDate = db.Column(db.String(255),comment='入住时间')
+    checkOutDate = db.Column(db.String(255),comment='离开时间')
+    businessZoneName = db.Column(db.String(255),comment='商圈名称')
+    province = db.Column(db.String(255),comment='省份')
+    image_paths = db.Column(db.String(255),comment='图片路径')###
 
 # python manage.py db init 初始化
 # python manage.py db migrate 生成迁移文件
