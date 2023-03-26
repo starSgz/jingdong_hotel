@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>密保问题</title>
+    {% include 'admin/common/header.html' %}
+    <!-- 样 式 文 件 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin/component/pear/css/pear.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin/admin/css/other/login.css') }}"/>
+</head>
+<!-- 代 码 结 构 -->
+<body background="{{ url_for('static', filename='admin/admin/images/background.svg') }}"
+      style="background-size: cover;">
+<form id="test" class="layui-form" action="javascript:void(0);" >
+    <div class="layui-form-item">
+        <img class="logo" src="{{ url_for('static', filename='admin/admin/images/logo.png') }}"/>
+        <div class="title" >密&nbsp;&nbsp;&nbsp;&nbsp;保&nbsp;&nbsp;&nbsp;&nbsp;问&nbsp;&nbsp;&nbsp;&nbsp;题</div>
+
+    </div>
+
+    {% for item in data.result %}
+        {{ item.question }}
+        <div class="layui-form-item">
+        <input name={{ item.id }} type="text" placeholder="请输入密保问题" value="" hover class="layui-input" />
+    </div>
+    {% endfor %}
+
+
+    <div class="layui-form-item">
+        <button class="pear-btn pear-btn-success login" lay-submit lay-filter="login">
+            确 定
+        </button>
+    </div>
+</form>
+{% include 'admin/common/footer.html' %}
+<script>
+    layui.use(['form', 'jquery', 'layer', 'button', 'popup'], function () {
+        let form = layui.form;
+        let $ = layui.jquery;
+        let layer = layui.layer;
+        let button = layui.button;
+        let popup = layui.popup;
+
+        // var uid = '{{ data.uid }}'
+        // console.log(uid)
+        form.on('submit(login)', function (data) {
+            let loader = layer.load();
+            let btn = button.load({elem: '.login'});
+
+            var formData = $("#test").serializeArray();
+            var result = [];
+            $.each(formData, function(i, field) {
+              var obj = {};
+              obj.id = field.name;
+              obj.answer = field.value;
+              result.push(obj);
+            });
+            console.log(result)
+
+            $.ajax({
+                data: JSON.stringify(result),
+                type: "POST",
+                dataType: 'JSON',
+                url: "/forgetPwdAnswer",
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                success: function (result) {
+                  layer.close(loader);
+                    btn.stop(function () {
+                        if (result.code==200) {
+                            popup.success(result.msg, function () {
+                                location.href = "{{ url_for('user.resetPwd',uid=data.uid)}}";
+                            })
+                        } else {
+                            popup.failure(result.msg, function () {
+                              location.href = "{{ url_for('user.forgetPwd')}}";
+                            });
+                        }
+                    })
+                }
+            });
+            return false;
+        });
+        
+        //自动加载
+        $(function () {
+		// 通过jqurey修改
+		refreshcode()
+        });
+
+        //点击刷新
+        $("#captchaImage").click(function() {
+        // 单击“刷新”按钮时更新验证码
+        refreshcode();
+        });
+
+        function refreshcode() {
+		// alert('点击了图片');
+		var url = "/captchaImage";
+		$.ajax({
+			url: url,
+			type: "GET",
+			data: {},
+			dataType: 'JSON',
+			success: function (res) {
+				console.log(res);
+				var img_base = 'data:image/jpg;base64,' + res.img
+				$("#captchaImage").attr("src", img_base);
+
+			}
+		});
+	};
+
+        setInterval(function () {
+            var url = "/captchaImage";
+            $.ajax({
+                url: url,
+                type: "GET",
+                data: {},
+                dataType: 'JSON',
+                success: function (res) {
+                console.log(res);
+                var img_base = 'data:image/jpg;base64,' + res.img
+                $("#captchaImage").attr("src", img_base);
+                }
+            });
+            }, 60*1000);
+        
+        
+        });
+
+
+        
+        // $(function () {
+        //     $("#captchaImage").click(function () {
+        //     var url = "/captchaImage";
+        //     $.ajax({
+        //         url: url,
+        //         type: "GET",
+        //         data: {},
+        //         dataType: 'JSON',
+        //         success: function (res) {
+        //         console.log(res);
+        //         var img_base = 'data:image/jpg;base64,' + res.img
+        //         $("#captchaImage").attr("src", img_base);
+        //         }
+        //     });
+        //     });
+
+</script>
+<script>
+    if (window !== top) {
+        top.location.href = location.href;
+    }
+</script>
+</body>
+</html>

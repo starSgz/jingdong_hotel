@@ -1,13 +1,19 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+from sqlalchemy_serializer import SerializerMixin
+
 from .baseModel import BaseModel
 from jingdong_demo.extensions import db
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
+UserQuestion = db.Table('user_question',
+                       db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True, nullable=False),
+                       db.Column('question_id', db.Integer, db.ForeignKey('question.id'), primary_key=True, nullable=False)
+                       )
 # user 模型类
-class UserModel(db.Model, BaseModel):
+class UserModel(db.Model, BaseModel,SerializerMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)  # 自增ID
     username = db.Column(db.String(12), index=True, unique=True)  # 用户名
@@ -19,6 +25,9 @@ class UserModel(db.Model, BaseModel):
     lastLogin = db.Column(db.DateTime)  # 上次登录时间
     registerTime = db.Column(db.DateTime, default=datetime.utcnow)  # 注册时间
     confirm = db.Column(db.SmallInteger, default=False)  # 激活状态 默认未激活（需要发送邮件进行激活）
+
+    user_question = db.relationship('QuestionModel', secondary=UserQuestion, backref=db.backref('user_question'))
+
 
     # 明文密码（只读）
     @property
@@ -37,6 +46,14 @@ class UserModel(db.Model, BaseModel):
     # 显示对象中的信息
     def __repr__(self):
         return "user object: name=%s" % self.username
+
+
+
+class QuestionModel(db.Model, BaseModel,SerializerMixin):
+    __tablename__ = 'question'
+    id = db.Column(db.Integer, primary_key=True)  # 自增ID
+    question = db.Column(db.String(250),nullable=False)
+    answer = db.Column(db.String(250),nullable=False)
 
 class JingDongModel(db.Model, BaseModel):
     __tablename__ = 'jingdong'

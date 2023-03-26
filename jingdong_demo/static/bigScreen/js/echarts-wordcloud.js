@@ -1,10 +1,10 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("echarts"));
+		module.exports = factory(require("jingdong_demo/static/bigScreen/js/echarts"));
 	else if(typeof define === 'function' && define.amd)
-		define(["echarts"], factory);
+		define(["jingdong_demo/static/bigScreen/js/echarts"], factory);
 	else if(typeof exports === 'object')
-		exports["echarts-wordcloud"] = factory(require("echarts"));
+		exports["echarts-wordcloud"] = factory(require("jingdong_demo/static/bigScreen/js/echarts"));
 	else
 		root["echarts-wordcloud"] = factory(root["echarts"]);
 })(self, function(__WEBPACK_EXTERNAL_MODULE_echarts_lib_echarts__) {

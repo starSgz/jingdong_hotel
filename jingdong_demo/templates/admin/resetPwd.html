@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>重置密码</title>
+    {% include 'admin/common/header.html' %}
+    <!-- 样 式 文 件 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin/component/pear/css/pear.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin/admin/css/other/login.css') }}"/>
+</head>
+<!-- 代 码 结 构 -->
+<body background="{{ url_for('static', filename='admin/admin/images/background.svg') }}"
+      style="background-size: cover;">
+<form id="test" class="layui-form" action="javascript:void(0);" >
+    <div class="layui-form-item">
+        <img class="logo" src="{{ url_for('static', filename='admin/admin/images/logo.png') }}"/>
+        <div class="title" >重&nbsp;&nbsp;&nbsp;&nbsp;置&nbsp;&nbsp;&nbsp;&nbsp;密&nbsp;&nbsp;&nbsp;&nbsp;码</div>
+    </div>
+
+    <div class="layui-form-item">
+        <input name='resetPwd_1' type="text" placeholder="请输入新密码" value="" hover class="layui-input" />
+    </div>
+
+    <div class="layui-form-item">
+        <input name='resetPwd_2' type="text" placeholder="请二次输入新密码" value="" hover class="layui-input" />
+    </div>
+
+
+    <div class="layui-form-item">
+        <button class="pear-btn pear-btn-success login" lay-submit lay-filter="login">
+            确 定
+        </button>
+    </div>
+</form>
+{% include 'admin/common/footer.html' %}
+<script>
+    layui.use(['form', 'jquery', 'layer', 'button', 'popup'], function () {
+        let form = layui.form;
+        let $ = layui.jquery;
+        let layer = layui.layer;
+        let button = layui.button;
+        let popup = layui.popup;
+        
+        var uid = '{{ data.uid }}'
+        console.log(uid)
+        form.on('submit(login)', function (data) {
+            let loader = layer.load();
+            let btn = button.load({elem: '.login'});
+            data.field.uid = uid;
+            $.ajax({
+                data: data.field,
+                type: "POST",
+                dataType: 'JSON',
+                url: "/resetPwd/"+uid,
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                success: function (result) {
+                    layer.close(loader);
+                    btn.stop(function () {
+                        if (result.code==200) {
+                            popup.success(result.msg, function () {
+                                location.href = "{{ url_for('user.login') }}";
+                            })
+                        } else {
+                            popup.failure(result.msg, function () {
+                              location.href = "{{ url_for('user.resetPwd',uid=data.uid)}}";
+                            });
+                        }
+                    })
+                }
+            });
+            return false;
+        });
+    });
+
+
+
+</script>
+<script>
+    if (window !== top) {
+        top.location.href = location.href;
+    }
+</script>
+</body>
+</html>

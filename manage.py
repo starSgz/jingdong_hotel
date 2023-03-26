@@ -25,20 +25,20 @@ required_list = ['/login','/captchaImage','/static/css/style_1.css','/static/js/
                  '/bigScreen','/map','/brandTop','/grade','/radar','/brandAvgPrice']
 
 
-@app.before_request
-def before_request():
-    print(request.path)
-    if request.path not in required_list:
-        auth = Auth()
-        if auth.token:
-            token_redis = 'jingdong_hotel:'+auth.token
-            time_ttl = redis_db.ttl(token_redis)
-            if time_ttl <= 0:
-                return render_template('user/login.html')
-
-        else:
-            return render_template('user/login.html')
-
+# @app.before_request
+# def before_request():
+#     print(request.path)
+#     if request.path not in required_list:
+#         auth = Auth()
+#         if auth.token:
+#             token_redis = 'jingdong_hotel:'+auth.token
+#             time_ttl = redis_db.ttl(token_redis)
+#             if time_ttl <= 0:
+#                 return render_template('user/login.html')
+#
+#         else:
+#             return render_template('user/login.html')
+#
 
 if __name__ == '__main__':
     manager.run()

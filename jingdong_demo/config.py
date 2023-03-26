@@ -14,6 +14,7 @@ class Config:
     # 是否追踪数据库中数据的改变
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     BOOTSTRAP_SERVE_LOCAL = True
+    SQLALCHEMY_COMMIT_ON_TEARDOWN = True
 
 
 class DevConfig(Config):
