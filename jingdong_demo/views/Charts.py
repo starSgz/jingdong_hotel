@@ -17,53 +17,40 @@ from jingdong_demo.models.model import JingDongModel
 from mychche import cache
 charts = Blueprint('charts', __name__)
 
+'''大屏'''
 @charts.route('/bigScreen',methods=['GET'])
-@cache.cached(timeout=31622400)  # 缓存结果一年
+@cache.cached(timeout=31622400,make_cache_key=lambda *args, **kwargs: request.url)  # 缓存结果一年
 def bigScreen():
-    '''大屏'''
     query = JingDongModel.query.with_entities(JingDongModel.sid,JingDongModel.cityName,JingDongModel.score,
                                               JingDongModel.cityName,JingDongModel.brandName).order_by("sid")
     pd_data = pd.read_sql(query.statement, query.session.bind)
-
     #总数量
     allcount = len(pd_data)
     #品牌数
     pd_data_brand=pd_data['brandName']
     pd_data_brand.drop_duplicates(keep='last',inplace=True)
     brandNum = pd_data_brand.count()
-
     #平均得分
     pd_data_score = pd_data
     pd_data_score['score'] = pd.to_numeric(pd_data_score['score'],errors='coerce')
     pd_data_score.dropna(subset=['score'],inplace=True)
     avgScore = pd_data_score['score'].mean()
-
     #酒店最多的城市
     hotelMax = pd_data.groupby('cityName').size().nlargest(1).to_dict()
 
-
-
     data = {"allcount":allcount,'brandNum':brandNum,'avgScore':round(avgScore,2),'hotelMax':hotelMax}
     print(data)
-
-
-
     return render_template('chart/bigScreen.html',data=data)
 
-
+'''中国地图'''
 @charts.route('/map',methods=['GET'])
-@cache.cached(timeout=31622400)  # 缓存结果一年
+@cache.cached(timeout=31622400,make_cache_key=lambda *args, **kwargs: request.url)  # 缓存结果一年
 def map():
-    '''大屏'''
     query = JingDongModel.query.with_entities(JingDongModel.sid,JingDongModel.cityName,JingDongModel.location).order_by("sid")
-
     pd_data = pd.read_sql(query.statement, query.session.bind)
-
     #去重 ###有问题
     pd_data = pd_data.dropna()
-
     address_num=[]
-
     #计算城市数量/map
     city_list = list(pd_data.groupby('cityName').count().index)
     count_list = list(pd_data.groupby('cityName').count().location)
@@ -72,50 +59,55 @@ def map():
 
     #获取城市经纬度
     dic = {}
-
     for i in city_list:
         #转字典
         res = ast.literal_eval(pd_data.loc[pd_data['cityName'] == i].iloc[0]['location'])
         dic[i]=[res.get("lon"),res.get("lat")]
 
     result = {"data":address_num,"geoCoordMap":dic}
-
     return jsonify({
         "code":200,
         "data":result
     })
 
+'''品牌top15'''
 @charts.route('/brandTop',methods=['GET'])
-@cache.cached(timeout=31622400)  # 缓存结果一年
+@cache.cached(timeout=31622400,make_cache_key=lambda *args, **kwargs: request.url)  # 缓存结果一年
 def brandTop():
-    '''品牌top15'''
-    query = JingDongModel.query.with_entities(JingDongModel.sid,JingDongModel.cityName,JingDongModel.brandName).order_by("sid")
-
+    cityName = request.args.get('cityName') #城市
+    businessZoneName = request.args.get('businessZoneName') #商圈
+    grade = request.args.get('grade') #星级
+    query = JingDongModel.query.with_entities(JingDongModel.sid,JingDongModel.cityName,JingDongModel.brandName,JingDongModel.businessZoneName,JingDongModel.grade).order_by("sid")
     pd_data = pd.read_sql(query.statement, query.session.bind)
+    # 条件筛选
+    if cityName is not None:
+        pd_data = pd_data[pd_data['cityName'] == cityName]
+    if businessZoneName is not None:
+        pd_data = pd_data[pd_data['businessZoneName'] == businessZoneName]
+        print(pd_data)
+    if grade is not None:
+        pd_data = pd_data[pd_data['grade'] == grade]
+        print(pd_data)
 
     brand_counts = pd_data.groupby('brandName').size().drop('其他').sort_values(ascending=False).head(15)
     brand_dict = OrderedDict(brand_counts.items())
-
     response = json.dumps({'code': 200, 'data': brand_dict}, ensure_ascii=False, sort_keys=False)
     return response
 
+'''等级图 星级占比'''
 @charts.route('/grade',methods=['GET'])
-@cache.cached(timeout=31622400)  # 缓存结果一年
+@cache.cached(timeout=31622400,make_cache_key=lambda *args, **kwargs: request.url)  # 缓存结果一年
 def grade():
-    '''等级图'''
     query = JingDongModel.query.with_entities(JingDongModel.sid,JingDongModel.grade).order_by("sid")
-
     pd_data = pd.read_sql(query.statement, query.session.bind)
-
     data = pd_data.groupby('grade').size().to_dict()
-
     response = json.dumps({'code': 200, 'data': data}, ensure_ascii=False, sort_keys=False)
     return response
 
+'''雷达图 设施配备'''
 @charts.route('/radar',methods=['GET'])
-@cache.cached(timeout=31622400)  # 缓存结果一年
+@cache.cached(timeout=31622400,make_cache_key=lambda *args, **kwargs: request.url)  # 缓存结果一年
 def radar():
-    '''雷达图 '''
     # 查询 amenities 列，按 sid 排序
     query = JingDongModel.query.with_entities(JingDongModel.amenities).order_by("sid")
     # 定义计数器，用于统计每个 amenity 出现的次数
@@ -132,11 +124,10 @@ def radar():
     response = json.dumps({'code': 200, 'data': amenities_top5, "maxNum": max_value}, ensure_ascii=False, sort_keys=False)
     return response
 
-
+'''品牌价格'''
 @charts.route('/brandAvgPrice',methods=['GET'])
-@cache.cached(timeout=31622400)  # 缓存结果一年
+@cache.cached(timeout=31622400,make_cache_key=lambda *args, **kwargs: request.url)  # 缓存结果一年
 def brandAvgPrice():
-    '''品牌价格'''
     query = JingDongModel.query.with_entities(JingDongModel.sid,JingDongModel.brandName,JingDongModel.price).order_by("sid")
     pd_data = pd.read_sql(query.statement, query.session.bind)
     pd_data['price'] = pd.to_numeric(pd_data['price'], errors='coerce')
@@ -147,12 +138,11 @@ def brandAvgPrice():
     # 将 Series 转换成字典
     avg_prices_dict = avg_prices.to_dict()
     response = json.dumps({'code': 200, 'data': avg_prices_dict,}, ensure_ascii=False, sort_keys=False)
-
     return response
 
-# 商圈Top5
+'''商圈Top8'''
 @charts.route('/businessZone',methods=['GET'])
-@cache.cached(timeout=31622400)  # 缓存结果一年
+@cache.cached(timeout=31622400,make_cache_key=lambda *args, **kwargs: request.url)  # 缓存结果一年
 def calculate_correlation():
     # 使用query方法查询数据
     query = JingDongModel.query.with_entities(JingDongModel.sid,JingDongModel.businessZoneName).order_by("sid")

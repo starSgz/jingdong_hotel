@@ -1,329 +1,476 @@
-﻿ $(window).load(function(){$(".loading").fadeOut()})  
+﻿$(window).load(function(){$(".loading").fadeOut()})
 $(function () {
-
-echarts_2()
-echarts_3()
-echarts_4()
-echarts_5()
-echarts_6()
-//完成
-function echarts_2() {
+    map();
+    echarts_2()
+    echarts_3() //数量Top10的品牌酒店的均价
+    echarts_4()
+    echarts_5()
+    echarts_6()
+    //中国地图
+    function map(condition="全国") {
         // 基于准备好的dom，初始化echarts实例
-        var myChart = echarts.init(document.getElementById('echart2'));
-        $.ajax({
-            type: "GET",
-            url: "/brandTop",
-            data: "{}",
-            dataType: "JSON",
-            success: function (response) {
-                var data=Object.values(response.data)
-                var titlename=Object.keys(response.data)
-                console.log(response.data)
+        var myChart = echarts.init(document.getElementById('map'));
+        if(condition=="全国"){
+            request_map()//默认全国
+        }
+        myChart.on('click', function (params) {
+            console.log(params["name"]);
+            echarts_2("cityName",cityName=params["name"]) //品牌数量Top15
+        });
+        function request_map(){
+            $.ajax({
+			url: "/map",
+			type: "GET",
+			data: {},
+			dataType: 'JSON',
+			success: function (req) {
+				console.log(req);
+                var data= req.data.data;
+                var geoCoordMap = req.data.geoCoordMap
+
+                var max = 0;
+                var min = Number.MAX_VALUE;
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].value > max) {
+                        max = data[i].value;
+                    }
+                    if (data[i].value < min) {
+                        min = data[i].value;
+                    }
+                }
+
+                var size = function (val) {
+                    return (val - min) / (max - min) * 50;
+                };
+
+                var convertData = function (data) {
+                    var res = [];
+                    for (var i = 0; i < data.length; i++) {
+                        var geoCoord = geoCoordMap[data[i].name];
+                        if (geoCoord) {
+                            res.push({
+                                name: data[i].name,
+                                value: geoCoord.concat(data[i].value),
+                                symbolSize: size(data[i].value) // 修改点的大小
+                            });
+                        }
+                    }
+                    return res;
+                };
+                console.log(convertData(data))
                 option = {
-                    grid: {
-                        left: '0',
-                        top:'0',
-                        right: '0',
-                        bottom: '0%',
-                       containLabel: true
-                    },
-                    xAxis: {
-                        show: false
-                    },
-                    yAxis: [{
+                    // backgroundColor: '#404a59',
+                   title: {
+                         text: '酒店数量分布',
+                         left: 'center',
+                         top:'40',
+                         textStyle: {
+                             color: '#fff'
+                         }
+                     },
+                     tooltip : {
                         show: true,
-                        data: titlename,
-                        inverse: true,
-                        axisLine: { show: false},
-                        splitLine:{ show: false},
-                        axisTick:{ show: false},
-                        axisLabel: {
-                            textStyle: {
-                                color:'#fff'
-                            },
-                        },
-
-                    }, {
-                        show: false,
-                        inverse: true,
-                        data: data,
-                        axisLabel: {textStyle: {color: '#fff'}},
-                        axisLine: { show: false},
-                        splitLine:{ show: false},
-                        axisTick: { show: false},
-                    }],
-                    series: [{
-                        name: '条',
-                        type: 'bar',
-                        yAxisIndex: 0,
-                        data: data,
-                        barWidth: 15,
-                        itemStyle: {
-                            normal: {
-                               barBorderRadius: 50,
-                                color:'#1089E7',
-                            }
-                        },
-                        label: {
-                           normal: {
-                                show: true,
-                                position: 'right',
-                                formatter: '{c}',
-                               textStyle: {color: 'rgba(255,255,255,.5)'}
-                            }
-                        },
-                    }]
-                };
-        // 使用刚指定的配置项和数据显示图表。
-        myChart.setOption(option);
-        window.addEventListener("resize",function(){
-            myChart.resize();
-        });
-            }
-        });
-
-
-    }
-
-function echarts_3() {
-        // 基于准备好的dom，初始化echarts实例
-        var myChart = echarts.init(document.getElementById('echart3'));
-        $.ajax({
-            type: "GET",
-            url: "/brandAvgPrice",
-            data: "{}",
-            dataType: "JSON",
-            success: function (response) {
-                console.log(Object.keys(response.data))
-                option = {
-                        tooltip: {
-                        trigger: 'axis',
-                        axisPointer: {
-                            lineStyle: {
-                                color: '#dddc6b'
-                            }
+                        trigger: 'item',
+                        formatter: function (e) {
+                            // console.log(e)
+                            return e.name + '：' + e.value[2]+"家"
                         }
-                    },
-                    grid: {
-                        left: '10',
-                        top: '20',
-                        right: '30',
-                        bottom: '10',
-                        containLabel: true
-                    },
+                     },
+                     geo: {
+                         map: 'china',
+                         label: {
+                             emphasis: {
+                                 show: false
+                             }
+                         },
+                         roam: true, // 开启缩放功能
+                         zoom:1.2,
+                         itemStyle: {
+                             normal: {
+                                 areaColor: 'rgba(2,37,101,.5)',
+                                 borderColor: 'rgba(112,187,252,.5)'
+                             },
+                             emphasis: {
+                                 areaColor: 'rgba(2,37,101,.8)'
+                             }
+                         }
+                     },
+                     series : [
+                         {
+                             name: '数量',
+                             type: 'scatter',
+                             coordinateSystem: 'geo',
+                             data: convertData(data),
+                             symbolSize: function (val) {
+                                 return val[2] / 15;
+                             },
+                             label: {
+                                 normal: {
+                                     formatter: '{a}',
+                                     position: 'right',
+                                     show: false
+                                 },
+                                 emphasis: {
+                                     show: true
+                                 }
+                             },
+                             itemStyle: {
+                                 normal: {
+                                     color: '#ffeb7b'
+                                 }
+                             }
+                         }
 
-                    xAxis: [{
-                        type: 'category',
-                        interval: 0,
-                        boundaryGap: false,
-                axisLabel:  {
-                    rotate: 45,
-                                textStyle: {
-                                    color: "rgba(255,255,255,.6)",
-                                    fontSize:10,
-                                },
-                            },
-                        axisLine: {
-
-                            lineStyle: {
-                                color: 'rgba(255,255,255,.2)'
-                            }
-
-                        },
-                   data: Object.keys(response.data)
-                    }, {
-
-                        axisPointer: {show: false},
-                        axisLine: {  show: false},
-                        position: 'bottom',
-                        offset: 20,
-
-
-
-                    }],
-
-                    yAxis: [{
-                        type: 'value',
-                        axisTick: {show: false},
-                        splitNumber: 4,
-                        axisLine: {
-                            lineStyle: {
-                                color: 'rgba(255,255,255,.1)'
-                            }
-                        },
-                       axisLabel:  {
-                                textStyle: {
-                                     color: "rgba(255,255,255,.6)",
-                                    fontSize:16,
-                                },
-                            },
-
-                        splitLine: {
-                            lineStyle: {
-                                 color: 'rgba(255,255,255,.1)',
-                      type: 'dotted',
-                            }
-                        }
-                    }],
-                    series: [
-                        {
-                        name: '品牌酒店平均价格',
-                        type: 'line',
-                       smooth: true,
-                        symbol: 'circle',
-                        symbolSize: 5,
-                        showSymbol: false,
-                        lineStyle: {
-
-                            normal: {
-                                color: 'rgba(31, 174, 234, 1)',
-                                width: 2
-                            }
-                        },
-                        areaStyle: {
-                            normal: {
-                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-                                    offset: 0,
-                                    color: 'rgba(31, 174, 234, 0.4)'
-                                }, {
-                                    offset: 0.8,
-                                    color: 'rgba(31, 174, 234, 0.1)'
-                                }], false),
-                                shadowColor: 'rgba(0, 0, 0, 0.1)',
-                            }
-                        },
-                            itemStyle: {
-                            normal: {
-                                color: '#1f7eea',
-                                borderColor: 'rgba(31, 174, 234, .1)',
-                                borderWidth: 5
-                            }
-                        },
-                        data:Object.values(response.data)
-
-                    },
-
-                         ]
-
-                };
-                // 使用刚指定的配置项和数据显示图表。
+                     ]
+                 };
                 myChart.setOption(option);
-                window.addEventListener("resize",function(){
-                    myChart.resize();
-                });
-            }
-        });
-
-
+                 window.addEventListener("resize",function(){
+                     myChart.resize();
+                 });
+			}
+		});
+        }
     }
-
-function echarts_4() {
-        // 基于准备好的dom，初始化echarts实例
-        var myChart = echarts.init(document.getElementById('echart4'));
-        $.ajax({
-            type: "GET",
-            url: "/businessZone",
-            data: "{}",
-            dataType: "JSON",
-            success: function (response) {
-                var data = Object.values(response.data)
-                var titlename = Object.keys(response.data)
-                option = {
-                    grid: {
-                        left: '0',
-                        top: '30',
-                        right: '0',
-                        bottom: '10',
-                        containLabel: true
-                    },
-                    legend: {
-                        top: 0,
-                        textStyle: {
-                            color: "#fff",
+    //完成 品牌数量Top15
+    function echarts_2(keys="",condition="全国") {
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('echart2'));
+            if(condition=="全国"){
+                request_brand("/brandTop")//默认全国
+            }else {
+                url = "/brandTop?"+keys+"="+condition
+                request_brand(url)
+            }
+            myChart.on('click', function (params) {
+                console.log(params);
+            });
+            function request_brand(url){
+                $.ajax({
+                type: "GET",
+                url: url,
+                data: "{}",
+                dataType: "JSON",
+                success: function (response) {
+                    var data=Object.values(response.data)
+                    var titlename=Object.keys(response.data)
+                    console.log(response.data)
+                    option = {
+                        grid: {
+                            left: '0',
+                            top:'0',
+                            right: '0',
+                            bottom: '0%',
+                           containLabel: true
                         },
-                        itemWidth: 10,  // 设置宽度
-                        itemHeight: 10, // 设置高度
-                    },
-                    tooltip: {
-                        trigger: 'axis',
-                        axisPointer: { // 坐标轴指示器，坐标轴触发有效
-                            type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
-                        }
-                    },
-                    xAxis: {
-                        type: 'category',
-                        data: titlename,
-                        axisTick: { //---坐标轴 刻度
-                            show: true, //---是否显示
+                        xAxis: {
+                            show: false
                         },
-                        axisLine: { //---坐标轴 轴线
-                            show: true, //---是否显示
-                            lineStyle: {
-                                color: 'rgba(255,255,255,.1)',
-                                width: 1,
-                                type: 'dotted',
-                            },
-                        },
-                        axisLabel: {//X轴文字
-                            rotate: -15,
-                            textStyle: {
-                                fontSize: 8,
-                                color: '#fff'
-                            },
-                        },
-                    },
-                    yAxis: {
-                        type: 'value',
-                        splitLine: {//分割线
+                        yAxis: [{
                             show: true,
-                            lineStyle: {
-                                color: 'rgba(255,255,255,.1)',
-                                width: 1,
-                                type: 'dotted'
+                            data: titlename,
+                            inverse: true,
+                            axisLine: { show: false},
+                            splitLine:{ show: false},
+                            axisTick:{ show: false},
+                            axisLabel: {
+                                textStyle: {
+                                    color:'#fff'
+                                },
+                            },
+
+                        }, {
+                            show: false,
+                            inverse: true,
+                            data: data,
+                            axisLabel: {textStyle: {color: '#fff'}},
+                            axisLine: { show: false},
+                            splitLine:{ show: false},
+                            axisTick: { show: false},
+                        }],
+                        series: [{
+                            name: '条',
+                            type: 'bar',
+                            yAxisIndex: 0,
+                            data: data,
+                            barWidth: 15,
+                            itemStyle: {
+                                normal: {
+                                   barBorderRadius: 50,
+                                    color:'#1089E7',
+                                }
+                            },
+                            label: {
+                               normal: {
+                                    show: true,
+                                    position: 'right',
+                                    formatter: '{c}',
+                                   textStyle: {color: 'rgba(255,255,255,.5)'}
+                                }
+                            },
+                        }]
+                    };
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+            window.addEventListener("resize",function(){
+                myChart.resize();
+            });
+                }
+            });
+            }
+        }
+    //数量Top10的品牌酒店的均价
+    function echarts_3(condition="全国") {
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('echart3'));
+            if(condition=="全国"){
+                request_brandAvgPrice()//默认全国
+            }
+            myChart.getZr().on('click', function (params) {
+                console.log(params);
+            });
+            function request_brandAvgPrice(){
+                $.ajax({
+                type: "GET",
+                url: "/brandAvgPrice",
+                data: "{}",
+                dataType: "JSON",
+                success: function (response) {
+                    console.log(Object.keys(response.data))
+                    option = {
+                            tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                lineStyle: {
+                                    color: '#dddc6b'
+                                }
                             }
                         },
-                        axisLabel: {//Y轴刻度值
-                            formatter: '{value}',
+                        grid: {
+                            left: '10',
+                            top: '20',
+                            right: '30',
+                            bottom: '10',
+                            containLabel: true
+                        },
+
+                        xAxis: [{
+                            type: 'category',
+                            interval: 0,
+                            boundaryGap: false,
+                    axisLabel:  {
+                        rotate: 45,
+                                    textStyle: {
+                                        color: "rgba(255,255,255,.6)",
+                                        fontSize:10,
+                                    },
+                                },
+                            axisLine: {
+
+                                lineStyle: {
+                                    color: 'rgba(255,255,255,.2)'
+                                }
+
+                            },
+                       data: Object.keys(response.data)
+                        }, {
+
+                            axisPointer: {show: false},
+                            axisLine: {  show: false},
+                            position: 'bottom',
+                            offset: 20,
+                        }],
+                        yAxis: [{
+                            type: 'value',
+                            axisTick: {show: false},
+                            splitNumber: 4,
+                            axisLine: {
+                                lineStyle: {
+                                    color: 'rgba(255,255,255,.1)'
+                                }
+                            },
+                           axisLabel:  {
+                                    textStyle: {
+                                         color: "rgba(255,255,255,.6)",
+                                        fontSize:16,
+                                    },
+                                },
+                            splitLine: {
+                                lineStyle: {
+                                     color: 'rgba(255,255,255,.1)',
+                          type: 'dotted',
+                                }
+                            }
+                        }],
+                        series: [
+                            {
+                            name: '品牌酒店平均价格',
+                            type: 'line',
+                           smooth: true,
+                            symbol: 'circle',
+                            symbolSize: 5,
+                            showSymbol: false,
+                            lineStyle: {
+
+                                normal: {
+                                    color: 'rgba(31, 174, 234, 1)',
+                                    width: 2
+                                }
+                            },
+                            areaStyle: {
+                                normal: {
+                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                        offset: 0,
+                                        color: 'rgba(31, 174, 234, 0.4)'
+                                    }, {
+                                        offset: 0.8,
+                                        color: 'rgba(31, 174, 234, 0.1)'
+                                    }], false),
+                                    shadowColor: 'rgba(0, 0, 0, 0.1)',
+                                }
+                            },
+                                itemStyle: {
+                                normal: {
+                                    color: '#1f7eea',
+                                    borderColor: 'rgba(31, 174, 234, .1)',
+                                    borderWidth: 5
+                                }
+                            },
+                            data:Object.values(response.data)
+                        },
+                             ]
+                    };
+                    // 使用刚指定的配置项和数据显示图表。
+                    myChart.setOption(option);
+                    window.addEventListener("resize",function(){
+                        myChart.resize();
+                    });
+                }
+            });
+            }
+
+    }
+    //商圈Top8
+    function echarts_4(condition="全国") {
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('echart4'));
+            if(condition=="全国"){
+                request_businessZone()//默认全国
+            }
+            myChart.on('click', function (params) {
+                console.log(params);
+            });
+            function request_businessZone(){
+                $.ajax({
+                type: "GET",
+                url: "/businessZone",
+                data: "{}",
+                dataType: "JSON",
+                success: function (response) {
+                    var data = Object.values(response.data)
+                    var titlename = Object.keys(response.data)
+                    option = {
+                        grid: {
+                            left: '0',
+                            top: '30',
+                            right: '0',
+                            bottom: '10',
+                            containLabel: true
+                        },
+                        legend: {
+                            top: 0,
                             textStyle: {
-                                fontSize: 12,
-                                color: '#fff'
+                                color: "#fff",
+                            },
+                            itemWidth: 10,  // 设置宽度
+                            itemHeight: 10, // 设置高度
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: { // 坐标轴指示器，坐标轴触发有效
+                                type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+                            }
+                        },
+                        xAxis: {
+                            type: 'category',
+                            data: titlename,
+                            axisTick: { //---坐标轴 刻度
+                                show: true, //---是否显示
+                            },
+                            axisLine: { //---坐标轴 轴线
+                                show: true, //---是否显示
+                                lineStyle: {
+                                    color: 'rgba(255,255,255,.1)',
+                                    width: 1,
+                                    type: 'dotted',
+                                },
+                            },
+                            axisLabel: {//X轴文字
+                                rotate: -15,
+                                textStyle: {
+                                    fontSize: 8,
+                                    color: '#fff'
+                                },
                             },
                         },
-                        axisLine: { //---坐标轴 轴线
-                            show: false, //---是否显示
+                        yAxis: {
+                            type: 'value',
+                            splitLine: {//分割线
+                                show: true,
+                                lineStyle: {
+                                    color: 'rgba(255,255,255,.1)',
+                                    width: 1,
+                                    type: 'dotted'
+                                }
+                            },
+                            axisLabel: {//Y轴刻度值
+                                formatter: '{value}',
+                                textStyle: {
+                                    fontSize: 12,
+                                    color: '#fff'
+                                },
+                            },
+                            axisLine: { //---坐标轴 轴线
+                                show: false, //---是否显示
+                            },
                         },
-                    },
-                    series: [{
-                        name: '酒店数量',
-                        type: 'bar',
-                        data: data,
-                        barWidth: 15,
-                        barGap: 1, //柱子之间间距 //柱图宽度      两种情况都要设置，设置series 中对应数据柱形的itemStyle属性下的emphasis和normal的barBorderRadius属性初始化时候圆角  鼠标移上去圆角
-                        itemStyle: {
-                            normal: {
-                                barBorderRadius: 50,
-                                color: "#446ACF",
-                            }
-                        },
-                    }]
-                };
-                console.log(response.data)
+                        series: [{
+                            name: '酒店数量',
+                            type: 'bar',
+                            data: data,
+                            barWidth: 15,
+                            barGap: 1, //柱子之间间距 //柱图宽度      两种情况都要设置，设置series 中对应数据柱形的itemStyle属性下的emphasis和normal的barBorderRadius属性初始化时候圆角  鼠标移上去圆角
+                            itemStyle: {
+                                normal: {
+                                    barBorderRadius: 50,
+                                    color: "#446ACF",
+                                }
+                            },
+                        }]
+                    };
+                    console.log(response.data)
 
 
-                // 使用刚指定的配置项和数据显示图表。
-                myChart.setOption(option);
-                window.addEventListener("resize", function () {
-                    myChart.resize();
-                });
+                    // 使用刚指定的配置项和数据显示图表。
+                    myChart.setOption(option);
+                    window.addEventListener("resize", function () {
+                        myChart.resize();
+                    });
+                }
+            });
             }
-        });
-}
-
-//完成
-function echarts_5() {
+    }
+    //完成 星级占比
+    function echarts_5(condition="全国") {
         // 基于准备好的dom，初始化echarts实例
         var myChart = echarts.init(document.getElementById('echart5'));
-        $.ajax({
+        if(condition=="全国"){
+            request_grade()//默认全国
+        }
+        myChart.on('click', function (params) {
+            console.log(params);
+        });
+        function request_grade(){
+            $.ajax({
             type: "GET",
             url: "/grade",
             data: "{}",
@@ -346,11 +493,11 @@ function echarts_5() {
                       trigger: 'item',
                       formatter: "{b} : {c} ({d}%)"
                   },
-                 
+
                   calculable : true,
                   series : [
                       {
-                        
+
                           type:'pie',
                           radius : [20, 70],
                           center: ["50%", "60%"],
@@ -363,7 +510,7 @@ function echarts_5() {
                     //            formatter: function(param) {
                     //                return param.name +':\n' + param.value +'\n';
                     //            }
-              
+
                     //        }
                     //    },
                        labelLine: {
@@ -373,13 +520,13 @@ function echarts_5() {
                                lineStyle: { width: 1}
                            }
                        },
-              
+
                        itemStyle: {
                            normal: {
                                shadowBlur: 30,
                                shadowColor: 'rgba(0, 0, 0, 0.4)'
                            }
-              
+
                        },
                       }
                   ]
@@ -389,14 +536,23 @@ function echarts_5() {
                       myChart.resize();
                   });
               }
-            
+
         });
+        }
+
     }
-//完成
-function echarts_6() {
+    //完成 设施配备
+    function echarts_6(condition="全国") {
         // 基于准备好的dom，初始化echarts实例
         var myChart = echarts.init(document.getElementById('echart6'));
-        $.ajax({
+        if(condition=="全国"){
+            request_radar()//默认全国
+        }
+        myChart.on('click', function (params) {
+            console.log(params);
+        });
+        function request_radar(){
+            $.ajax({
             type: "GET",
             url: "/radar",
             data: "{}",
@@ -404,12 +560,9 @@ function echarts_6() {
             success: function (response) {
                 const names = response.data.map(item => item[0]);
                 option = {
-    
                     tooltip: {
                         trigger: 'axis'
                     },
-
-                    
                     radar: [{
                         indicator: names.map(name => {
                             return {text: name, max: response.data.maxNum};
@@ -422,12 +575,12 @@ function echarts_6() {
                         startAngle: 90,
                         splitNumber: 4,
                         shape: 'circle',
-                    
+
                         name: {
                             padding:-5,
                             formatter: '{value}',
                             textStyle: {
-                              
+
                                 color: 'rgba(255,255,255,.5)'
                             }
                         },
@@ -457,7 +610,7 @@ function echarts_6() {
                             name: '数值',
                             value: response.data.map(item => item[1]),
                             lineStyle: {
-                                normal: { 
+                                normal: {
                                     color:'#03b48e',
                                     width:2,
                                 }
@@ -469,7 +622,7 @@ function echarts_6() {
                                 }
                             },
                             symbolSize: 0,
-                          
+
                         }, ]
                     }, ]
                 };
@@ -481,8 +634,7 @@ function echarts_6() {
 
             }
         });
-
-
+        }
     }
 })
 
