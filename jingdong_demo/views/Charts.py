@@ -152,6 +152,7 @@ def brandAvgPrice():
 
 # 商圈Top5
 @charts.route('/businessZone',methods=['GET'])
+@cache.cached(timeout=31622400)  # 缓存结果一年
 def calculate_correlation():
     # 使用query方法查询数据
     query = JingDongModel.query.with_entities(JingDongModel.sid,JingDongModel.businessZoneName).order_by("sid")
