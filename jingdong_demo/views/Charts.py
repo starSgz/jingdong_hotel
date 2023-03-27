@@ -9,15 +9,16 @@ import json
 import math
 from collections import OrderedDict, Counter
 
+from django.shortcuts import render
 from flask import Blueprint, render_template, request, jsonify, make_response
 import pandas as  pd
 import numpy as np
 from jingdong_demo.models.model import JingDongModel
-
+from mychche import cache
 charts = Blueprint('charts', __name__)
 
-
 @charts.route('/bigScreen',methods=['GET'])
+@cache.cached(timeout=31622400)  # 缓存结果一年
 def bigScreen():
     '''大屏'''
     query = JingDongModel.query.with_entities(JingDongModel.sid,JingDongModel.cityName,JingDongModel.score,
@@ -51,6 +52,7 @@ def bigScreen():
 
 
 @charts.route('/map',methods=['GET'])
+@cache.cached(timeout=31622400)  # 缓存结果一年
 def map():
     '''大屏'''
     query = JingDongModel.query.with_entities(JingDongModel.sid,JingDongModel.cityName,JingDongModel.location).order_by("sid")
@@ -62,7 +64,7 @@ def map():
 
     address_num=[]
 
-    #计算城市数量
+    #计算城市数量/map
     city_list = list(pd_data.groupby('cityName').count().index)
     count_list = list(pd_data.groupby('cityName').count().location)
     for k,v in zip(city_list,count_list):
@@ -84,6 +86,7 @@ def map():
     })
 
 @charts.route('/brandTop',methods=['GET'])
+@cache.cached(timeout=31622400)  # 缓存结果一年
 def brandTop():
     '''品牌top15'''
     query = JingDongModel.query.with_entities(JingDongModel.sid,JingDongModel.cityName,JingDongModel.brandName).order_by("sid")
@@ -97,6 +100,7 @@ def brandTop():
     return response
 
 @charts.route('/grade',methods=['GET'])
+@cache.cached(timeout=31622400)  # 缓存结果一年
 def grade():
     '''等级图'''
     query = JingDongModel.query.with_entities(JingDongModel.sid,JingDongModel.grade).order_by("sid")
@@ -109,19 +113,28 @@ def grade():
     return response
 
 @charts.route('/radar',methods=['GET'])
+@cache.cached(timeout=31622400)  # 缓存结果一年
 def radar():
-    '''雷达图'''
-    query = JingDongModel.query.with_entities(JingDongModel.sid,JingDongModel.amenities).order_by("sid")
-
-    pd_data = pd.read_sql(query.statement, query.session.bind)
-    print(Counter(pd_data['amenities'].str.split('|').sum()))
-    amenities_counter = Counter(pd_data['amenities'].str.split('|').sum()).most_common(5)
-    max_value = int(math.ceil(max(dict(amenities_counter).values()) / 1000)) * 1000
-    response = json.dumps({'code': 200, 'data': amenities_counter,"maxNum":max_value}, ensure_ascii=False, sort_keys=False)
+    '''雷达图 '''
+    # 查询 amenities 列，按 sid 排序
+    query = JingDongModel.query.with_entities(JingDongModel.amenities).order_by("sid")
+    # 定义计数器，用于统计每个 amenity 出现的次数
+    amenities_counter = Counter()
+    # 遍历查询结果，每次处理1000条记录
+    for amenities_str, in query.yield_per(1000):
+        # 将 amenities 列按 '|' 分隔成列表，然后加入计数器
+        amenities_counter.update(amenities_str.split('|'))
+    # 取出出现次数最多的 5 个 amenity
+    amenities_top5 = amenities_counter.most_common(5)
+    # 计算最大值，向上取整到千位
+    max_value = (max(dict(amenities_top5).values()) // 1000 + 1) * 1000
+    # 将结果转换为 JSON 格式，并返回
+    response = json.dumps({'code': 200, 'data': amenities_top5, "maxNum": max_value}, ensure_ascii=False, sort_keys=False)
     return response
 
 
 @charts.route('/brandAvgPrice',methods=['GET'])
+@cache.cached(timeout=31622400)  # 缓存结果一年
 def brandAvgPrice():
     '''品牌价格'''
     query = JingDongModel.query.with_entities(JingDongModel.sid,JingDongModel.brandName,JingDongModel.price).order_by("sid")
@@ -135,4 +148,17 @@ def brandAvgPrice():
     avg_prices_dict = avg_prices.to_dict()
     response = json.dumps({'code': 200, 'data': avg_prices_dict,}, ensure_ascii=False, sort_keys=False)
 
+    return response
+
+# 商圈Top5
+@charts.route('/businessZone',methods=['GET'])
+def calculate_correlation():
+    # 使用query方法查询数据
+    query = JingDongModel.query.with_entities(JingDongModel.sid,JingDongModel.businessZoneName).order_by("sid")
+    # 将数据转换为DataFrame格式
+    data = pd.read_sql(query.statement, query.session.bind)
+    # 获取出现次数最多的前三个品牌名称
+    top_brands = data['businessZoneName'].value_counts().drop('').nlargest(8).to_dict()
+    # print(top_brands)
+    response = json.dumps({'code': 200, 'data': top_brands, }, ensure_ascii=False, sort_keys=False)
     return response

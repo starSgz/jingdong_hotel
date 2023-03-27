@@ -10,7 +10,6 @@ from jingdong_demo.utils.requestHeader import Auth
 
 app = create_app()
 
-# flask-script命令行管理插件
 manager = Manager(app=app)
 manager.add_command('db',MigrateCommand)
 #设置配置

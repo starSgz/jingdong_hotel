@@ -17,6 +17,21 @@ $(function () {
                 var data= req.data.data;
                 var geoCoordMap = req.data.geoCoordMap
 
+                var max = 0;
+                var min = Number.MAX_VALUE;
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].value > max) {
+                        max = data[i].value;
+                    }
+                    if (data[i].value < min) {
+                        min = data[i].value;
+                    }
+                }
+
+                var size = function (val) {
+                    return (val - min) / (max - min) * 50;
+                };
+
                 var convertData = function (data) {
                     var res = [];
                     for (var i = 0; i < data.length; i++) {
@@ -24,7 +39,8 @@ $(function () {
                         if (geoCoord) {
                             res.push({
                                 name: data[i].name,
-                                value: geoCoord.concat(data[i].value)
+                                value: geoCoord.concat(data[i].value),
+                                symbolSize: size(data[i].value) // 修改点的大小
                             });
                         }
                     }
@@ -60,7 +76,7 @@ $(function () {
                                  show: false
                              }
                          },
-                         roam: false,
+                         roam: true, // 开启缩放功能
                          zoom:1.2,
                          itemStyle: {
                              normal: {

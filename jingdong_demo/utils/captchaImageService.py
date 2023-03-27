@@ -1,4 +1,4 @@
-from captcha.image import ImageCaptcha
+# from captcha.image import ImageCaptcha
 import random
 
 import base64
