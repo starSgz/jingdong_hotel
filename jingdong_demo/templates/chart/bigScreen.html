@@ -35,19 +35,19 @@
                     <div class="yqlist">
                         <ul class="clearfix">
                             <li>
-                                <div class="yq" id="yq">{{ data.allcount }}</div>
-                                <span>全国酒店总数量</span></li>
+                                <div class="yq" id="allcount">{{ data.allcount }}</div>
+                                <span id="allcounName">全国酒店总数量</span></li>
                             <li>
-                                <div class="yq">{{ data.brandNum }}</div>
-                                <span>品牌数量</span></li>
+                                <div class="yq" id="brandNum">{{ data.brandNum }}</div>
+                                <span id="brandNumName">品牌数量</span></li>
                             <li>
-                                <div class="yq">{{ data.avgScore }}</div>
-                                <span>平均得分</span></li>
+                                <div class="yq" id="avgScore">{{ data.avgScore }}</div>
+                                <span id="avgScoreName">平均得分</span></li>
                             <li>
                                 {{ value }}
                                 {% for key, value in data['hotelMax'].items() %}
-                                <div class="yq">{{ value }}</div>
-                                <span>最多酒店城市:{{ key }}</span></li>
+                                <div class="yq" id="hotelMax">{{ value }}</div>
+                                <span id="hotelMaxName">最多酒店城市:{{ key }}</span></li>
                             {% endfor %}
                         </ul>
                     </div>

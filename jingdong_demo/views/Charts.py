@@ -17,13 +17,12 @@ from jingdong_demo.models.model import JingDongModel
 from mychche import cache
 
 charts = Blueprint('charts', __name__)
-
+provinces = ['河北', '山西', '内蒙古', '辽宁', '吉林', '黑龙江', '江苏', '浙江', '安徽', '福建', '江西', '山东', '河南', '湖北', '湖南', '广东', '广西', '海南', '四川', '贵州', '云南', '西藏', '陕西', '甘肃', '青海', '宁夏', '新疆', '台湾']
 '''大屏'''
 @charts.route('/bigScreen', methods=['GET'])
 @cache.cached(timeout=31622400, make_cache_key=lambda *args, **kwargs: request.url)  # 缓存结果一年
 def bigScreen():
-    query = JingDongModel.query.with_entities(JingDongModel.sid, JingDongModel.cityName, JingDongModel.score,
-                                              JingDongModel.cityName, JingDongModel.brandName).order_by("sid")
+    query = JingDongModel.query.with_entities(JingDongModel.sid, JingDongModel.cityName, JingDongModel.score,JingDongModel.brandName).order_by("sid")
     pd_data = pd.read_sql(query.statement, query.session.bind)
     # 总数量
     allcount = len(pd_data)
@@ -94,12 +93,15 @@ def brandTop():
     cityName = request.args.get('cityName')  # 城市
     businessZoneName = request.args.get('businessZoneName')  # 商圈
     grade = request.args.get('grade')  # 星级
-    query = JingDongModel.query.with_entities(JingDongModel.sid, JingDongModel.cityName, JingDongModel.brandName,
+    query = JingDongModel.query.with_entities(JingDongModel.sid, JingDongModel.cityName, JingDongModel.brandName,JingDongModel.province,
                                               JingDongModel.businessZoneName, JingDongModel.grade).order_by("sid")
     pd_data = pd.read_sql(query.statement, query.session.bind)
     # 条件筛选
     if cityName is not None:
-        pd_data = pd_data[pd_data['cityName'] == cityName]
+        if cityName in provinces:
+            pd_data = pd_data[pd_data['province'].str.contains(cityName)]
+        else:
+            pd_data = pd_data[pd_data['cityName'] == cityName]
     if businessZoneName is not None:
         pd_data = pd_data[pd_data['businessZoneName'] == businessZoneName]
         print(pd_data)
@@ -120,11 +122,14 @@ def grade():
     cityName = request.args.get('cityName')  # 城市
     businessZoneName = request.args.get('businessZoneName')  # 商圈
     brandName = request.args.get('brandName')  # 品牌
-    query = JingDongModel.query.with_entities(JingDongModel.sid, JingDongModel.cityName, JingDongModel.brandName,JingDongModel.businessZoneName, JingDongModel.grade).order_by("sid")
+    query = JingDongModel.query.with_entities(JingDongModel.sid,JingDongModel.province,  JingDongModel.cityName, JingDongModel.brandName,JingDongModel.businessZoneName, JingDongModel.grade).order_by("sid")
     pd_data = pd.read_sql(query.statement, query.session.bind)
     # 条件筛选
     if cityName is not None:
-        pd_data = pd_data[pd_data['cityName'] == cityName]
+        if cityName in provinces:
+            pd_data = pd_data[pd_data['province'].str.contains(cityName)]
+        else:
+            pd_data = pd_data[pd_data['cityName'] == cityName]
     if businessZoneName is not None:
         pd_data = pd_data[pd_data['businessZoneName'] == businessZoneName]
         print(pd_data)
@@ -148,10 +153,13 @@ def radar():
     # 条件筛选
     vars = [cityName,businessZoneName,brandName,grade]
     if all(var is None for var in vars):
-        print(11)
         query = JingDongModel.query.with_entities(JingDongModel.amenities).order_by("sid")
     if cityName is not None:
-        query = JingDongModel.query.filter(JingDongModel.cityName == cityName).with_entities(JingDongModel.amenities).order_by("sid")
+        if cityName is not None:
+            if cityName in provinces:
+                query = JingDongModel.query.filter(JingDongModel.province.like('%' + cityName + '%')).with_entities(JingDongModel.amenities).order_by("sid")
+            else:
+                query = JingDongModel.query.filter(JingDongModel.cityName == cityName).with_entities(JingDongModel.amenities).order_by("sid")
     if businessZoneName is not None:
         query = JingDongModel.query.filter(JingDongModel.businessZoneName == businessZoneName).with_entities(JingDongModel.amenities).order_by("sid")
     if brandName is not None:
@@ -179,7 +187,7 @@ def radar():
 @charts.route('/brandAvgPrice', methods=['GET'])
 @cache.cached(timeout=31622400, make_cache_key=lambda *args, **kwargs: request.url)  # 缓存结果一年
 def brandAvgPrice():
-    query = JingDongModel.query.with_entities(JingDongModel.sid, JingDongModel.cityName, JingDongModel.brandName,JingDongModel.businessZoneName, JingDongModel.grade, JingDongModel.price).order_by("sid")
+    query = JingDongModel.query.with_entities(JingDongModel.sid, JingDongModel.province, JingDongModel.cityName, JingDongModel.brandName,JingDongModel.businessZoneName, JingDongModel.grade, JingDongModel.price).order_by("sid")
     pd_data = pd.read_sql(query.statement, query.session.bind)
     cityName = request.args.get('cityName')  # 城市
     businessZoneName = request.args.get('businessZoneName')  # 商圈
@@ -187,7 +195,10 @@ def brandAvgPrice():
     grade = request.args.get('grade')  # 星级
     # 条件筛选
     if cityName is not None:
-        pd_data = pd_data[pd_data['cityName'] == cityName]
+        if cityName in provinces:
+            pd_data = pd_data[pd_data['province'].str.contains(cityName)]
+        else:
+            pd_data = pd_data[pd_data['cityName'] == cityName]
     if businessZoneName is not None:
         pd_data = pd_data[pd_data['businessZoneName'] == businessZoneName]
         print(pd_data)
@@ -214,7 +225,7 @@ def brandAvgPrice():
 @cache.cached(timeout=31622400, make_cache_key=lambda *args, **kwargs: request.url)  # 缓存结果一年
 def calculate_correlation():
     # 使用query方法查询数据
-    query = JingDongModel.query.with_entities(JingDongModel.sid, JingDongModel.cityName, JingDongModel.brandName,JingDongModel.businessZoneName, JingDongModel.grade).order_by("sid")
+    query = JingDongModel.query.with_entities(JingDongModel.sid, JingDongModel.province, JingDongModel.cityName, JingDongModel.brandName,JingDongModel.businessZoneName, JingDongModel.grade).order_by("sid")
     # 将数据转换为DataFrame格式
     pd_data = pd.read_sql(query.statement, query.session.bind)
     cityName = request.args.get('cityName')  # 城市
@@ -222,7 +233,10 @@ def calculate_correlation():
     grade = request.args.get('grade')  # 星级
     # 条件筛选
     if cityName is not None:
-        pd_data = pd_data[pd_data['cityName'] == cityName]
+        if cityName in provinces:
+            pd_data = pd_data[pd_data['province'].str.contains(cityName)]
+        else:
+            pd_data = pd_data[pd_data['cityName'] == cityName]
     if brandName is not None:
         pd_data = pd_data[pd_data['brandName'] == brandName]
         print(pd_data)
@@ -234,3 +248,57 @@ def calculate_correlation():
     # print(top_brands)
     response = json.dumps({'code': 200, 'data': top_brands, }, ensure_ascii=False, sort_keys=False)
     return response
+
+
+'''大屏左上角 统计功能'''
+@charts.route('/dataStatistics', methods=['GET'])
+@cache.cached(timeout=31622400, make_cache_key=lambda *args, **kwargs: request.url)  # 缓存结果一年
+def dataStatistics():
+    query = JingDongModel.query.with_entities(JingDongModel.sid, JingDongModel.province, JingDongModel.cityName, JingDongModel.brandName,JingDongModel.businessZoneName, JingDongModel.grade,JingDongModel.score).order_by("sid")
+    pd_data = pd.read_sql(query.statement, query.session.bind)
+    cityName = request.args.get('cityName')  # 城市
+    businessZoneName = request.args.get('businessZoneName')  # 商圈
+    brandName = request.args.get('brandName')  # 品牌
+    grade = request.args.get('grade')  # 星级
+    screeningCondition = ''
+    # 条件筛选
+    if cityName is not None:
+        if cityName in provinces:
+            pd_data = pd_data[pd_data['province'].str.contains(cityName)]
+        else:
+            pd_data = pd_data[pd_data['cityName'] == cityName]
+        screeningCondition = cityName
+    if businessZoneName is not None:
+        pd_data = pd_data[pd_data['businessZoneName'] == businessZoneName]
+        screeningCondition = businessZoneName
+        print(pd_data)
+    if brandName is not None:
+        pd_data = pd_data[pd_data['brandName'] == brandName]
+        screeningCondition = brandName
+        print(pd_data)
+    if grade is not None:
+        pd_data = pd_data[pd_data['grade'] == grade]
+        screeningCondition = grade
+        print(pd_data)
+
+    # 总数量
+    allcount = len(pd_data)
+    # 品牌数
+    pd_data_brand = pd_data['brandName']
+    pd_data_brand.drop_duplicates(keep='last', inplace=True)
+    brandNum = pd_data_brand.count()
+    # 平均得分
+    pd_data_score = pd_data
+    pd_data_score['score'] = pd.to_numeric(pd_data_score['score'], errors='coerce')
+    pd_data_score.dropna(subset=['score'], inplace=True)
+    avgScore = pd_data_score['score'].mean()
+    # 酒店最多的城市
+    hotelMax = pd_data.groupby('cityName').size().nlargest(1).to_dict()
+
+    data = {"allcount": allcount, 'brandNum': int(brandNum), 'avgScore': round(avgScore, 2), 'hotelMax': hotelMax}
+    print(data)
+    return jsonify({
+        "code": 200,
+        "data": data,
+        "screeningCondition":screeningCondition
+    })

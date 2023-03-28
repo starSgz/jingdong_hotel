@@ -8,6 +8,37 @@ $(function () {
     echarts_4()
     echarts_5()
     echarts_6()
+    //请求统计信息
+    function request_dataStatistics(keys,values) {
+        $.ajax({
+            url: "/dataStatistics?"+keys+"=" + values,
+            type: 'GET',
+            success: function (data) {
+                // 根据id修改标签里面的文本内容
+                console.log(data.data.allcount)
+                //修改文本
+                $("#allcounName").text(data.screeningCondition + "酒店总数量");
+                var hotelMax = data.data.hotelMax;
+                var hotelMaxKeys = Object.keys(hotelMax);
+                for (var i = 0; i < hotelMaxKeys.length; i++) {
+                    var key = hotelMaxKeys[i];
+                    $("#hotelMaxName").text("最多酒店的城市:" + key);
+                }
+                //修改数字
+                $("#allcount").text(data.data.allcount);
+                $("#avgScore").text(data.data.avgScore);
+                $("#brandNum").text(data.data.brandNum);
+                for (var i = 0; i < hotelMaxKeys.length; i++) {
+                    var key = hotelMaxKeys[i];
+                    var value = hotelMax[key];
+                    $("#hotelMax").text(value);
+                }
+            },
+            error: function () {
+                console.log("请求失败！");
+            }
+        });
+    }
 
     //中国地图
     function map(keys = "", condition = "全国") {
@@ -26,6 +57,8 @@ $(function () {
             echarts_4("cityName", cityName = params["name"])
             echarts_5("cityName", cityName = params["name"])
             echarts_6("cityName", cityName = params["name"])
+            request_dataStatistics("cityName",params["name"])
+
         });
 
         function request_map(url) {
@@ -160,6 +193,7 @@ $(function () {
             echarts_4("brandName", brandName = params["name"])
             echarts_5("brandName", brandName = params["name"])
             echarts_6("brandName", brandName = params["name"])
+            request_dataStatistics("brandName",params["name"])
         });
 
         function request_brand(url) {
@@ -390,6 +424,8 @@ $(function () {
             echarts_3("businessZoneName", businessZoneName = params["name"])
             echarts_5("businessZoneName", businessZoneName = params["name"])
             echarts_6("businessZoneName", businessZoneName = params["name"])
+            request_dataStatistics("businessZoneName",params["name"])
+
         });
 
         function request_businessZone(url) {
@@ -510,6 +546,8 @@ $(function () {
             echarts_3("grade", grade = params["name"])
             echarts_4("grade", grade = params["name"])
             echarts_6("grade", grade = params["name"])
+            request_dataStatistics("grade",params["name"])
+
         });
 
         function request_grade(url) {
