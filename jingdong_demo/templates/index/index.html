@@ -1,0 +1,267 @@
+﻿<!doctype html>
+<html class="x-admin-sm">
+    <head>
+{#        <link rel="stylesheet" href="{{ url_for('static', filename='admin/admin/css/other/login.css') }}"/>#}
+
+        <meta charset="UTF-8">
+        <title>数据可视化系统</title>
+        <meta name="renderer" content="webkit|ie-comp|ie-stand">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+        <meta http-equiv="Cache-Control" content="no-siteapp" />
+        <link rel="stylesheet" href="../../static/css/font.css">
+        <link rel="stylesheet" href="../../static/css/index.css">
+        <link rel="stylesheet" href="../../static/css/iconfont.css">
+        <script src="../../static/lib/layui/layui.js" charset="utf-8"></script>
+{#        <script src="{{ url_for('static', filename='admin/admin/css/other/login.css') }}" charset="utf-8"></script>#}
+        <script type="text/javascript" src="../../static/js/index.js"></script>
+        <style>
+            .show_list{display: block !important;}
+            .hide_lits{display: none;}
+
+        </style>
+
+    </head>
+    <body class="index">
+        <!-- 顶部开始 -->
+        <div class="container">
+            <div class="logo">
+                <a href="./index.html">数据可视化系统</a></div>
+            <div class="left_open">
+                <a><i title="展开左侧栏" class="iconfont">&#xe699;</i></a>
+            </div>
+
+            <ul class="layui-nav left fast-add" lay-filter="">
+                <li class="layui-nav-item daohang" ids="#table1">
+                    <a href="javascript:;">账户设置</a>
+                </li>
+                <li class="layui-nav-item daohang" ids="#table2">
+                    <a href="javascript:;">可视化</a>
+                </li>
+            </ul>
+
+            <ul class="layui-nav right" lay-filter="">
+                <li class="new-nav" id="gonggao">
+                    <i></i>
+                    <a href="#"><i class="iconfont">&#xe6bc;</i><span class="layui-badge">4</span></a>
+                    <!--<dl class="layui-nav-child">-->
+                    <ul class="news" id="gonggaos" style="display: none;">
+                        <li class="dropdown-header"><i class="iconfont">&#xe6bc;</i>4条公告</li>
+                        <li> <a href="javascript:;" onclick="xadmin.add_tab('统计页面','notice-list.html')">
+                            <div class="clearfix">
+                                <span class="pull-left"> <i class="btn btn-pink iconfont">&#xe6bc;</i> 系统公告 </span>
+                                <span class="pull-right badge badge-info">+12</span>
+                            </div> </a> </li>
+                        <li> <a href="javascript:;" onclick="xadmin.add_tab('统计页面','notice-list.html')"> <i class="btn btn-primary iconfont">&#xe6bc;</i> 商城公告 </a> </li>
+
+                        <li> <a href="javascript:;" onclick="xadmin.add_tab('统计页面','notice-list.html')">查看所有公告 <i class="iconfont">&#xe69b;</i> </a> </li>
+                    </ul>
+                    <!--</dl>-->
+
+                </li>
+                <li class="new-nav" id="new-nav">
+                    <i></i>
+                    <a href="#"><i class="iconfont">&#xe713;</i><span class="layui-badge">9</span></a>
+                    <!--<dl class="layui-nav-child">-->
+                    <ul class="news" id="news" style="display: none;">
+                        <li class="dropdown-header"><i class="iconfont">&#xe6bc;</i>8条通知</li>
+                        <li> <a href="#">
+                            <div class="clearfix">
+                                <span class="pull-left"> <i class="btn btn-pink iconfont">&#xe69b;</i> 待发货订单 </span>
+                                <span class="pull-right badge badge-info">+12</span>
+                            </div> </a> </li>
+                        <li> <a href="#"> <i class="btn btn-primary iconfont">&#xe696;</i> 切换为编辑登录.. </a> </li>
+                        <li> <a href="#">
+                            <div class="clearfix">
+                                <span class="pull-left"> <i class="iconfont btn btn-success">&#xe723;</i> 新订单 </span>
+                                <span class="pull-right badge badge-success">+8</span>
+                            </div> </a> </li>
+                        <li> <a href="#">
+                            <div class="clearfix">
+                                <span class="pull-left"> <i class="iconfont btn btn-info">&#xe6ba;</i> 粉丝 </span>
+                                <span class="pull-right badge badge-info">+11</span>
+                            </div> </a> </li>
+                        <li> <a href="javascript:;" onclick="xadmin.add_tab('统计页面','email.html')"> 查看所有消息 <i class="iconfont">&#xe69b;</i> </a> </li>
+                    </ul>
+                    <!--</dl>-->
+
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">admin</a>
+                    <dl class="layui-nav-child">
+                        <!-- 二级菜单 -->
+                        <dd>
+                            <a onclick="xadmin.open('个人信息','one_set.html')">个人信息</a></dd>
+                        <dd>
+                            <a onclick="xadmin.open('切换帐号','http://www.baidu.com')">切换帐号</a></dd>
+                        <dd>
+                            <a href="./login.html">退出</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item to-index">
+                    <a href="/">前台首页</a></li>
+            </ul>
+
+
+
+        </div>
+        <!-- 顶部结束 -->
+        <!-- 中部开始 -->
+        <!-- 左侧菜单开始 -->
+        <div class="left-nav show_list" id="table1">
+            <div id="side-nav">
+                <ul id="nav">
+                    <li>
+                        <a href="javascript:;" onclick="xadmin.add_tab('我的桌面','/welcome')">
+                            <i class="layui-icon left-nav-li" lay-tips="首页">&#xe68e;</i>
+                            <cite>首页</cite>
+                            <i class="iconfont nav_right">&#xe697;</i></a>
+
+                    </li>
+
+                    <li class="layui-nav-item">
+                        <a href="javascript:;">
+                            <i class="iconfont left-nav-li icon-shangpinguanli" lay-tips="商品管理"></i>
+                            <cite>账户设置</cite>
+                            <i class="iconfont nav_right">&#xe697;</i></a>
+                        <ul class="sub-menu">
+                            <li>
+                                <a onclick="xadmin.add_tab('商品列表','goodslist.html')">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>修改信息</cite></a>
+                            </li>
+                            <li>
+                                <a onclick="xadmin.add_tab('商品品牌','brand.html')">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>查看用户</cite></a>
+                            </li>
+                            
+                        </ul>
+
+
+                    </li>
+
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+
+
+        <div class="left-nav hide_lits" id="table2">
+            <div id="side-nav">
+                <ul id="nav">
+                    <li>
+                        <a href="javascript:;" onclick="xadmin.add_tab('我的桌面','welcome.html')">
+                            <i class="layui-icon left-nav-li" lay-tips="首页">&#xe68e;</i>
+                            <cite>首页</cite>
+                            <i class="iconfont nav_right">&#xe697;</i></a>
+
+                    </li>
+
+                    <li class="layui-nav-item">
+                        <a href="javascript:;">
+                            <i class="iconfont left-nav-li" lay-tips="文章管理">&#xe6a2;</i>
+                            <cite>数据可视化</cite>
+                            <i class="iconfont nav_right">&#xe697;</i></a>
+                        <ul class="sub-menu">
+                            <li>
+                                <a onclick="xadmin.add_tab('文章类型列表','articletype-list.html')">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>可视化大屏</cite></a>
+                            </li>
+                            <!-- <li>
+                                <a onclick="xadmin.add_tab('文章列表','article-list.html')">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>文章列表</cite></a>
+                            </li> -->
+                        </ul>
+
+
+                    </li>
+
+
+                        </ul>
+                    </li>
+                
+
+                </ul>
+            </div>
+        </div>
+
+        <!-- 左侧菜单结束 -->
+        <!-- 右侧主体开始 -->
+        <div class="page-content">
+            <div class="layui-tab tab" lay-filter="xbs_tab" lay-allowclose="false">
+                <ul class="layui-tab-title">
+                    <li class="home">
+                        <i class="layui-icon">&#xe68e;</i>我的桌面</li></ul>
+                <div class="layui-unselect layui-form-select layui-form-selected" id="tab_right">
+                    <dl>
+                        <dd data-type="this">关闭当前</dd>
+                        <dd data-type="other">关闭其它</dd>
+                        <dd data-type="all">关闭全部</dd></dl>
+                </div>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <iframe src='/welcome' frameborder="0" scrolling="yes" class="x-iframe"></iframe>
+{#                        <link rel="stylesheet" href="../../static/css/iconfont.css">#}
+
+                    </div>
+                </div>
+                <div id="tab_show"></div>
+            </div>
+        </div>
+        <div class="page-content-bg"></div>
+        <style id="theme_style"></style>
+        <!-- 右侧主体结束 -->
+        <!-- 中部结束 -->
+
+    <style>
+.copyrights{text-indent:-9999px;height:0;line-height:0;font-size:0;overflow:hidden;}
+</style>
+<div class="copyrights" id="links20210126">
+	Collect from <a href="http://www.cssmoban.com/"  title="网站模板">模板之家</a>
+	<a href="http://cooco.net.cn/" title="组卷网">组卷网</a>
+</div>
+</body>
+    <script src="../../static/js/jquery.min.js"></script>
+
+</html>
+
+<script>
+    $(".daohang").click(function(){
+        var table = $(this).attr("ids");
+        var ids = $(".show_list").attr("id");
+        $("#"+ids+"").addClass("hide_lits");
+        $("#"+ids+"").removeClass("show_list");
+        $(""+table+"").removeClass("hide_lits");
+        $(""+table+"").addClass("show_list");
+    })
+
+
+    window.onload=function () {
+        var click=document.getElementById('new-nav');
+        var news=document.getElementById('news');
+        click.addEventListener('mousemove',function () {
+            news.style.display='block';
+        });
+        click.addEventListener('mouseout',function () {
+            news.style.display='none';
+        });
+
+        var gonggao=document.getElementById('gonggao');
+        var gonggaos=document.getElementById('gonggaos');
+        gonggao.addEventListener('mousemove',function () {
+            gonggaos.style.display='block';
+        });
+        gonggao.addEventListener('mouseout',function () {
+            gonggaos.style.display='none';
+        });
+    }
+
+
+
+
+</script>
+

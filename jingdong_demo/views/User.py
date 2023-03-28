@@ -185,8 +185,15 @@ def logout():
         return jsonify({'code':500,'msg':'注销失败'})
 
 
-@user.route('/')
+
+@user.route('/',methods=['GET'])
 def index():
-    return render_template('user/login.html')
+    print(66667)
+    return render_template('index/index.html')
+
+@user.route('/welcome',methods=['GET'])
+def welcome():
+    print(66668)
+    return render_template('index/welcome.html',data={"user":"admin1"})
 
 

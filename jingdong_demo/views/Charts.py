@@ -9,7 +9,6 @@ import json
 import math
 from collections import OrderedDict, Counter
 
-from django.shortcuts import render
 from flask import Blueprint, render_template, request, jsonify, make_response
 import pandas as pd
 import numpy as np
