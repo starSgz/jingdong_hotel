@@ -31,7 +31,8 @@
     </div>
     <div class="layui-form-item">
         <input type="checkbox" name="remember-me" title="记住密码" lay-skin="primary">
-        <a href="/forgetPwd" name="forget-me" title="忘记密码" lay-skin="primary"  style="float:right;font-size:14px;line-height:38px;color:#333;">忘记密码</a>
+        <a href="/register" name="register-me" title="注册" lay-skin="primary"  style="float:right;font-size:14px;line-height:38px;color:#333;">注册</a>
+        <a href="/forgetPwd" name="forget-me" title="忘记密码?" lay-skin="primary"  style="float:right;font-size:14px;line-height:38px;color:#333;">忘记密码？</a>
     </div>
     <div class="layui-form-item">
         <button class="pear-btn pear-btn-success login" lay-submit lay-filter="login">
@@ -51,6 +52,8 @@
         form.on('submit(login)', function (data) {
             let loader = layer.load();
             let btn = button.load({elem: '.login'});
+            data.field['uuid'] = localStorage.getItem("uuid_");
+            localStorage.clear();
             $.ajax({
                 data: data.field,
                 type: "POST",
@@ -61,6 +64,7 @@
                     btn.stop(function () {
                         if (result.code==200) {
                             popup.success(result.msg, function () {
+                                localStorage.setItem('token',result.token)
                                 location.href = "{{ url_for('user.index') }}";
                             })
                         } else {
@@ -96,6 +100,7 @@
 			dataType: 'JSON',
 			success: function (res) {
 				console.log(res);
+                localStorage.setItem('uuid_',res.uuid);
 				var img_base = 'data:image/jpg;base64,' + res.img
 				$("#captchaImage").attr("src", img_base);
 
@@ -111,6 +116,7 @@
                 data: {},
                 dataType: 'JSON',
                 success: function (res) {
+                localStorage.setItem('uuid_',res.uuid);
                 console.log(res);
                 var img_base = 'data:image/jpg;base64,' + res.img
                 $("#captchaImage").attr("src", img_base);

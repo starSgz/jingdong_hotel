@@ -30,10 +30,10 @@
 <body>
     <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
         <legend>京东酒店列表
-        <div class="search-box" style="padding-left: 800px">
-            <input type="text" id="keywords" placeholder="请输入关键字" value="">
-            <button id="search-btn">搜索</button>
-          </div>
+<!--        <div class="search-box" style="padding-left: 800px">-->
+<!--            <input type="text" id="keywords" placeholder="请输入关键字" value="">-->
+<!--            <button id="search-btn">搜索</button>-->
+<!--          </div>-->
         </legend>
     </fieldset>
 
@@ -78,7 +78,7 @@ layui.use(['jquery', 'layer','laypage'], function () {
         keywords: keywords // 将搜索关键字添加到请求参数中
       },
       success: function (response) {
-        renderPolicyList(response);
+        renderHotelList(response);
         // 处理成功响应
         count = response.data.total;
       },
@@ -112,7 +112,7 @@ $('#search-btn').on('click', function () {
         keywords: keywords // 将搜索关键字添加到请求参数中
       },
       success: function (response) {
-        renderHotelLis(response);
+        renderHotelList(response);
         // 处理成功响应
         count : response.data.total;
       },
@@ -139,20 +139,21 @@ $('#search-btn').on('click', function () {
     function renderHotelList(data) {
         var html = '';
         for (var i = 0; i < data.data.data.length; i++) {
-
-            field = data.data.data[i]
-            html += '<a href="' + field.herf_url + '" target="_blank">';
-            html += '<blockquote class="layui-elem-quote layui-quote-nm">';
-            html += field.title;
-            html += '<span class="source">来源：' + field.source + '</span>';
-            html += '</blockquote></a>';
-
-
-
+						field = data.data.data[i]
+             console.log(field)
+							html += '<a href="'+field.detailPage_url+'" target="_blank">'
+							html += '<blockquote class="layui-elem-quote layui-quote-nm">'
+							html += field.name
+							html += '<br>价格：'+field.price+' | 评分： '+field.score+'  | 配置： '+field.amenities+'  | 星级： '+field.grade
+							html += '<span class="source">地址： '+field.province+field.cityName+field.districtName+field.address+' </span>'
+							html +=  '</blockquote></a>'
         }
+        console.log(html)
         $('#hotel-list').html(html);
-}
+}});
 
-  });
+
+
+
 </script>
 </html>

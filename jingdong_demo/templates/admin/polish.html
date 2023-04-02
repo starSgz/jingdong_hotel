@@ -1,0 +1,211 @@
+<html>
+{% include 'admin/common/header.html' %}
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		个人信息设置
+	</title>
+
+</head>
+<style>
+	body {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100vh;
+	}
+</style>
+
+<body>
+	<div style="width: 500;margin: 0 auto;text-align: center；">
+		<form name="myform" class="layui-form" action="javascript:void(0);">
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">密码</label>
+				<div class="layui-input-block">
+					<input type="password" name="password" placeholder="请输入密码" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">二次密码</label>
+				<div class="layui-input-block">
+					<input type="password" name="password2" placeholder="请输入密码" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">年龄</label>
+				<div class="layui-input-block">
+					<input type="text" name="age" placeholder="请输入标题" autocomplete="off" class="layui-input" value="{{ data.age }}">
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">邮箱</label>
+				<div class="layui-input-block">
+					<input id="email" type="text" name="email" placeholder="请输入标题" autocomplete="off" class="layui-input" value="{{ data.email }}">
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">密保问题1</label>
+				<div class="layui-field-title site-title"> {{ data.q_a[0].question }}
+				</div>
+				<div class="layui-input-block">
+					<input type="text" name="answer_1" autocomplete="off" class="layui-input" value="{{ data.q_a[0].answer }}">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">密保问题2</label>
+				<div class="layui-field-title site-title">{{ data.q_a[1].question }}
+				</div>
+				<div class="layui-input-block">
+					<input type="text" name="answer_2" autocomplete="off" class="layui-input" value="{{ data.q_a[1].answer }}">
+				</div>
+			</div>
+
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">性别</label>
+				<div class="layui-input-block">
+					{% if data.sex == 1 %}
+					<input type="radio" name="sex" value="1" title="男" checked>
+					<input type="radio" name="sex" value="0" title="女">
+					{% else %}
+					<input type="radio" name="sex" value="1" title="男">
+					<input type="radio" name="sex" value="0" title="女" checked>
+					{% endif %}
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button class="layui-btn give" lay-submit lay-filter="formDemo">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+{% include 'admin/common/footer.html' %}
+<script type="text/javascript">
+	localStorage.setItem("token", "{{token}}");
+
+	layui.use(['form', 'jquery', 'layer', 'button', 'popup'], function () {
+		let form = layui.form;
+		let $ = layui.jquery;
+		let layer = layui.layer;
+		let button = layui.button;
+		let popup = layui.popup;
+
+		form.on('submit(formDemo)', function (data) {
+			if (passCheck2()&&checkEmail()){
+			let loader = layer.load();
+			let btn = button.load({ elem: '.give' });
+					$.ajax({
+					data: data.field,
+					type: "POST",
+					dataType: 'JSON',
+					url: "/polish",
+					success: function (result) {
+						layer.close(loader);
+						btn.stop(function () {
+							if (result.code == 200) {
+								popup.success(result.msg, function () {
+									location.href = "{{ url_for('user.polish') }}";
+								})
+							} else {
+								popup.failure(result.msg, function () {
+									location.href = "{{ url_for('user.polish') }}";
+								});
+							}
+						})
+					}
+				});
+				return false;
+			}
+			
+
+		});
+
+
+
+
+
+
+	// $(function () {
+	// 	passCheck2()
+	// });
+
+	// 执行请求就拦截掉
+	function logout() {
+		var url = "/logout";
+		$.ajax({
+			url: url,
+			type: "GET",
+			data: {},
+			dataType: 'JSON',
+			success: function (res) {
+				console.log(res);
+				// localStorage.clear();//全部删除
+				delete localStorage['token'];//删除单个
+				location.href = "/login";
+			}
+		});
+	};
+
+
+	function passCheck2() {
+		var p1 = document.myform.password.value;
+		var p2 = document.myform.password2.value;
+		if (p1 != p2) {
+			layer.alert("确认密码与密码输入不一致",{ end: function() {
+			location.href = "{{ url_for('user.polish') }}";
+		}});
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+
+	function checkEmail() {
+		var Email = document.getElementById("email").value;
+		var e = Email.indexOf("@" && ".");
+		if (Email.length != 0) {
+			if (e > 0) {
+				if (Email.charAt(0) == "@" && ".") {
+					layer.alert("符号@和符号.不能再邮件地址第一位!！",{ end: function() {
+			location.href = "{{ url_for('user.polish') }}";
+				}});
+					return false;
+				}
+				else {
+					return true;
+				}
+			}
+			else {
+				layer.alert("电子邮件格式不正确!！",{ end: function() {
+			location.href = "{{ url_for('user.polish') }}";
+		}});
+				return false;
+			}
+		}
+		else {
+			layer.alert("请输入电子邮件！",{ end: function() {
+			location.href = "{{ url_for('user.polish') }}";
+		}});
+			return false;
+		}
+	}
+
+
+
+	 });
+
+
+</script>
+
+
+</html>

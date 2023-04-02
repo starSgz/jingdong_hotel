@@ -1,8 +1,6 @@
 ﻿<!doctype html>
 <html class="x-admin-sm">
     <head>
-{#        <link rel="stylesheet" href="{{ url_for('static', filename='admin/admin/css/other/login.css') }}"/>#}
-
         <meta charset="UTF-8">
         <title>数据可视化系统</title>
         <meta name="renderer" content="webkit|ie-comp|ie-stand">
@@ -13,7 +11,6 @@
         <link rel="stylesheet" href="../../static/css/index.css">
         <link rel="stylesheet" href="../../static/css/iconfont.css">
         <script src="../../static/lib/layui/layui.js" charset="utf-8"></script>
-{#        <script src="{{ url_for('static', filename='admin/admin/css/other/login.css') }}" charset="utf-8"></script>#}
         <script type="text/javascript" src="../../static/js/index.js"></script>
         <style>
             .show_list{display: block !important;}
@@ -26,7 +23,7 @@
         <!-- 顶部开始 -->
         <div class="container">
             <div class="logo">
-                <a href="./index.html">数据可视化系统</a></div>
+                <a href="/">数据可视化系统</a></div>
             <div class="left_open">
                 <a><i title="展开左侧栏" class="iconfont">&#xe699;</i></a>
             </div>
@@ -38,53 +35,23 @@
                 <li class="layui-nav-item daohang" ids="#table2">
                     <a href="javascript:;">可视化</a>
                 </li>
+                <li class="layui-nav-item daohang" ids="#table3">
+                    <a href="javascript:;">酒店信息</a>
+                </li>
             </ul>
 
             <ul class="layui-nav right" lay-filter="">
                 <li class="new-nav" id="gonggao">
                     <i></i>
-                    <a href="#"><i class="iconfont">&#xe6bc;</i><span class="layui-badge">4</span></a>
-                    <!--<dl class="layui-nav-child">-->
-                    <ul class="news" id="gonggaos" style="display: none;">
-                        <li class="dropdown-header"><i class="iconfont">&#xe6bc;</i>4条公告</li>
-                        <li> <a href="javascript:;" onclick="xadmin.add_tab('统计页面','notice-list.html')">
-                            <div class="clearfix">
-                                <span class="pull-left"> <i class="btn btn-pink iconfont">&#xe6bc;</i> 系统公告 </span>
-                                <span class="pull-right badge badge-info">+12</span>
-                            </div> </a> </li>
-                        <li> <a href="javascript:;" onclick="xadmin.add_tab('统计页面','notice-list.html')"> <i class="btn btn-primary iconfont">&#xe6bc;</i> 商城公告 </a> </li>
+                    <!-- <a href="#"><i class="iconfont">&#xe6bc;</i><span class="layui-badge">4</span></a> -->
 
-                        <li> <a href="javascript:;" onclick="xadmin.add_tab('统计页面','notice-list.html')">查看所有公告 <i class="iconfont">&#xe69b;</i> </a> </li>
+                    <ul class="news" id="gonggaos" style="display: none;">
                     </ul>
-                    <!--</dl>-->
+
 
                 </li>
                 <li class="new-nav" id="new-nav">
                     <i></i>
-                    <a href="#"><i class="iconfont">&#xe713;</i><span class="layui-badge">9</span></a>
-                    <!--<dl class="layui-nav-child">-->
-                    <ul class="news" id="news" style="display: none;">
-                        <li class="dropdown-header"><i class="iconfont">&#xe6bc;</i>8条通知</li>
-                        <li> <a href="#">
-                            <div class="clearfix">
-                                <span class="pull-left"> <i class="btn btn-pink iconfont">&#xe69b;</i> 待发货订单 </span>
-                                <span class="pull-right badge badge-info">+12</span>
-                            </div> </a> </li>
-                        <li> <a href="#"> <i class="btn btn-primary iconfont">&#xe696;</i> 切换为编辑登录.. </a> </li>
-                        <li> <a href="#">
-                            <div class="clearfix">
-                                <span class="pull-left"> <i class="iconfont btn btn-success">&#xe723;</i> 新订单 </span>
-                                <span class="pull-right badge badge-success">+8</span>
-                            </div> </a> </li>
-                        <li> <a href="#">
-                            <div class="clearfix">
-                                <span class="pull-left"> <i class="iconfont btn btn-info">&#xe6ba;</i> 粉丝 </span>
-                                <span class="pull-right badge badge-info">+11</span>
-                            </div> </a> </li>
-                        <li> <a href="javascript:;" onclick="xadmin.add_tab('统计页面','email.html')"> 查看所有消息 <i class="iconfont">&#xe69b;</i> </a> </li>
-                    </ul>
-                    <!--</dl>-->
-
                 </li>
                 <li class="layui-nav-item">
                     <a href="javascript:;">admin</a>
@@ -93,9 +60,7 @@
                         <dd>
                             <a onclick="xadmin.open('个人信息','one_set.html')">个人信息</a></dd>
                         <dd>
-                            <a onclick="xadmin.open('切换帐号','http://www.baidu.com')">切换帐号</a></dd>
-                        <dd>
-                            <a href="./login.html">退出</a></dd>
+                            <a href="/login">退出</a></dd>
                     </dl>
                 </li>
                 <li class="layui-nav-item to-index">
@@ -121,20 +86,20 @@
 
                     <li class="layui-nav-item">
                         <a href="javascript:;">
-                            <i class="iconfont left-nav-li icon-shangpinguanli" lay-tips="商品管理"></i>
+                            <i class="iconfont left-nav-li icon-shangpinguanli" lay-tips="账户设置"></i>
                             <cite>账户设置</cite>
                             <i class="iconfont nav_right">&#xe697;</i></a>
                         <ul class="sub-menu">
                             <li>
-                                <a onclick="xadmin.add_tab('商品列表','goodslist.html')">
+                                <a onclick="xadmin.add_tab('修改信息','/polish')">
                                     <i class="iconfont">&#xe6a7;</i>
                                     <cite>修改信息</cite></a>
                             </li>
-                            <li>
+                            <!-- <li>
                                 <a onclick="xadmin.add_tab('商品品牌','brand.html')">
                                     <i class="iconfont">&#xe6a7;</i>
                                     <cite>查看用户</cite></a>
-                            </li>
+                            </li> -->
                             
                         </ul>
 
@@ -160,21 +125,18 @@
                     </li>
 
                     <li class="layui-nav-item">
-                        <a href="javascript:;">
-                            <i class="iconfont left-nav-li" lay-tips="文章管理">&#xe6a2;</i>
+
+                        <a>
+                            <i class="iconfont left-nav-li" lay-tips="可视化管理">&#xe6a2;</i>
                             <cite>数据可视化</cite>
                             <i class="iconfont nav_right">&#xe697;</i></a>
                         <ul class="sub-menu">
                             <li>
-                                <a onclick="xadmin.add_tab('文章类型列表','articletype-list.html')">
+                                <a onclick="xadmin.add_tab('大屏可视化','/bigScreen')">
                                     <i class="iconfont">&#xe6a7;</i>
-                                    <cite>可视化大屏</cite></a>
+                                    <cite>大屏可视化</cite></a>
                             </li>
-                            <!-- <li>
-                                <a onclick="xadmin.add_tab('文章列表','article-list.html')">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>文章列表</cite></a>
-                            </li> -->
+                            
                         </ul>
 
 
@@ -188,6 +150,46 @@
                 </ul>
             </div>
         </div>
+
+
+        <div class="left-nav hide_lits" id="table3">
+            <div id="side-nav">
+                <ul id="nav">
+                    <li>
+                        <a href="javascript:;" onclick="xadmin.add_tab('我的桌面','welcome.html')">
+                            <i class="layui-icon left-nav-li" lay-tips="首页">&#xe68e;</i>
+                            <cite>首页</cite>
+                            <i class="iconfont nav_right">&#xe697;</i></a>
+
+                    </li>
+
+                    <li class="layui-nav-item">
+
+                        <a>
+                            <i class="iconfont left-nav-li" lay-tips="酒店信息管理">&#xe6a2;</i>
+                            <cite>酒店信息</cite>
+                            <i class="iconfont nav_right">&#xe697;</i></a>
+                        <ul class="sub-menu">
+                            <li>
+                                <a onclick="xadmin.add_tab('酒店列表','/hotel')">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>酒店列表</cite></a>
+                            </li>
+                            
+                        </ul>
+
+
+                    </li>
+
+
+                        </ul>
+                    </li>
+                
+
+                </ul>
+            </div>
+        </div>
+
 
         <!-- 左侧菜单结束 -->
         <!-- 右侧主体开始 -->
@@ -220,10 +222,7 @@
     <style>
 .copyrights{text-indent:-9999px;height:0;line-height:0;font-size:0;overflow:hidden;}
 </style>
-<div class="copyrights" id="links20210126">
-	Collect from <a href="http://www.cssmoban.com/"  title="网站模板">模板之家</a>
-	<a href="http://cooco.net.cn/" title="组卷网">组卷网</a>
-</div>
+
 </body>
     <script src="../../static/js/jquery.min.js"></script>
 

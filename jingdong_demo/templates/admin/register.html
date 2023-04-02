@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>注 册</title>
+    {% include 'admin/common/header.html' %}
+    <!-- 样 式 文 件 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin/component/pear/css/pear.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin/admin/css/other/login.css') }}"/>
+</head>
+<!-- 代 码 结 构 -->
+<body background="{{ url_for('static', filename='admin/admin/images/background.svg') }}"
+      style="background-size: cover;">
+<form class="layui-form" action="javascript:void(0);" >
+    <div class="layui-form-item">
+        <img class="logo" src="{{ url_for('static', filename='admin/admin/images/logo.png') }}"/>
+        <div class="title" >注&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;册</div>
+
+    </div>
+    <div class="layui-form-item">
+        <input name="username" type="text" placeholder="账 户  " required lay-verify="required" value="" hover class="layui-input"/>
+    </div>
+    <div class="layui-form-item">
+        <input name="password" type="password" placeholder="密 码 " required lay-verify="required" value="" hover class="layui-input"/>
+    </div>
+	
+    <div class="layui-form-item">
+        <input name="age" type="text" placeholder="年 龄 " value="" hover class="layui-input"/>
+    </div>
+    <div class="layui-form-item">
+        <input name="email" type="text" placeholder="邮 箱 " value="" hover class="layui-input"/>
+    </div>
+
+    <div class="layui-form-item">
+        <input name="question_1" type="text" placeholder="密保问题 1" value="" hover class="layui-input"/>
+    </div>
+    <div class="layui-form-item">
+        <input name="answer_1" type="text" placeholder="密保答案 1" value="" hover class="layui-input"/>
+    </div>
+    <div class="layui-form-item">
+        <input name="question_2" type="text" placeholder="密保问题 2" value="" hover class="layui-input"/>
+    </div>
+    <div class="layui-form-item">
+        <input name="answer_2" type="text" placeholder="密保答案 2" value="" hover class="layui-input"/>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">性别</label>
+        <div class="layui-input-block">
+            <input type="radio" name="sex" value="1" title="男" />
+             <input type="radio" name="sex" value="0" title="女" />
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <button class="pear-btn pear-btn-success login" lay-submit lay-filter="login">
+            确 定
+        </button>
+    </div>
+
+</form>
+{% include 'admin/common/footer.html' %}
+<script>
+    layui.use(['form', 'jquery', 'layer', 'button', 'popup'], function () {
+        let form = layui.form;
+        let $ = layui.jquery;
+        let layer = layui.layer;
+        let button = layui.button;
+        let popup = layui.popup;
+
+        form.on('submit(login)', function (data) {
+            let loader = layer.load();
+            let btn = button.load({elem: '.login'});
+            $.ajax({
+                data: data.field,
+                type: "POST",
+                dataType: 'JSON',
+                url: "/register",
+                success: function (result) {
+                    layer.close(loader);
+                    btn.stop(function () {
+                        if (result.code==200) {
+                            popup.success(result.msg, function () {
+                                location.href = "{{ url_for('user.login') }}";
+                            })
+                        } else {
+                            popup.failure(result.msg, function () {
+                                location.href = "{{ url_for('user.register') }}";
+                            });
+                        }
+                    })
+                }
+            });
+            return false;
+        });
+
+        });
+
+
+
+        // $(function () {
+        //     $("#captchaImage").click(function () {
+        //     var url = "/captchaImage";
+        //     $.ajax({
+        //         url: url,
+        //         type: "GET",
+        //         data: {},
+        //         dataType: 'JSON',
+        //         success: function (res) {
+        //         console.log(res);
+        //         var img_base = 'data:image/jpg;base64,' + res.img
+        //         $("#captchaImage").attr("src", img_base);
+        //         }
+        //     });
+        //     });
+
+
+
+
+
+
+
+
+
+</script>
+<script>
+    if (window !== top) {
+        top.location.href = location.href;
+    }
+</script>
+</body>
+</html>
