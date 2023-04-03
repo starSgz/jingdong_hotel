@@ -20,6 +20,7 @@ from jingdong_demo.utils.encryptService import operate_token
 from jingdong_demo.utils.requestHeader import Auth
 
 import pandas as pd
+from mychche import cache
 user = Blueprint('user', __name__)
 
 
@@ -230,7 +231,7 @@ def index():
 @user.route('/polish',methods=['GET','POST'])
 def polish():
     if request.method=='GET':
-        query = UserModel.query.filter(UserModel.id==4).first()
+        query = UserModel.query.filter(UserModel.id==1).first()
         dic = query.to_dict(rules=('-user_ip','-password_hash','-user_question'))
         q_n_list = query.user_question
         q_a=[]
@@ -257,7 +258,7 @@ def polish():
     query.user_question[0].answer = answer_1
     query.user_question[1].answer = answer_2
 
-    query = UserModel.query.filter(UserModel.id == 4).first()
+    query = UserModel.query.filter(UserModel.id == 1).first()
     dic = query.to_dict(rules=('-user_ip', '-password_hash', '-user_question'))
     q_n_list = query.user_question
     q_a = []
@@ -301,13 +302,13 @@ def get_data(start_time, end_time):
 @user.route('/welcome',methods=['GET'])
 def welcome():
     #查询当前用户
-    res_ = UserModel.query.filter(UserModel.id==4).first()
+    res_ = UserModel.query.filter(UserModel.id==1).first()
     query = res_.user_ip
     data = {}
     data['total']=len(query)
     res = [[q.id, q.ip, q.login_time, q.logout_time] for q in query]
     df = pd.DataFrame(res, columns=['id', 'ip', 'login_time', 'logout_time'])
-
+        ####這裡有個問題 登錄賬號硬是cookie裡面的 但是我還沒加權限  所以检索到 改成你数据库的用户id就好了
     #不同ip数目
     ip_count = df.groupby('ip').count().reset_index()
     ip_count = ip_count[['ip', 'id']]
@@ -368,6 +369,7 @@ def welcome():
 
 
 @user.route('/hotel',methods=['GET'])
+@cache.cached(timeout=31622400, make_cache_key=lambda *args, **kwargs: request.url)  # 缓存结果一年
 def test():
     pageNum = request.args.get('pageNum', 1)
     pageSize = request.args.get('pageSize', 10)
@@ -401,6 +403,7 @@ def test():
 
 
 @user.route('/api/hotel',methods=['GET'])
+@cache.cached(timeout=31622400, make_cache_key=lambda *args, **kwargs: request.url)  # 缓存结果一年
 def hotel_api():
     """
     政策html

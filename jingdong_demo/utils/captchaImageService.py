@@ -1,4 +1,7 @@
-from captcha.image import ImageCaptcha
+import io
+
+import gvcode
+# from captcha.image import ImageCaptcha
 import random
 
 import base64
@@ -8,25 +11,26 @@ from ..config  import redis_db
 
 
 class OperateCaptcha:
-
     def generate_code(self, code_len=4):
-        code_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        chars_len = len(code_chars) - 1
-        code = ''
-        for _ in range(code_len):
-            index = random.randint(0, chars_len)
-            code = code + code_chars[index]
-        return code
+        self.s, self.img = gvcode.generate()
+        # code_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        # chars_len = len(code_chars) - 1
+        # code = ''
+        # for _ in range(code_len):
+        #     index = random.randint(0, chars_len)
+        #     code = code + code_chars[index]
+        return self.img
 
-    def generate_captcha_base64(self, code):
-        # 生成验证码
-        image = ImageCaptcha()
+    def generate_captcha_base64(self,code):
+        # 将图片转换为BytesIO对象
+        img_bytes_io = io.BytesIO()
+        self.s.save(img_bytes_io, format='PNG')
+        img_bytes_io.seek(0)
 
-        # 生成图片BytesIO
-        img_bytes_io = image.generate(code)
-        # 转化为字符串
-        image_base64 = base64.b64encode(img_bytes_io.read())
-        image_base64_str = str(image_base64, 'utf-8')
+        # 将BytesIO对象转换为base64编码的字符串
+        image_base64 = base64.b64encode(img_bytes_io.getvalue())
+        image_base64_str = image_base64.decode('utf-8')
+
         return image_base64_str
 
     def generate_code_key(self):
