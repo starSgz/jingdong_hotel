@@ -8,6 +8,60 @@ $(function () {
     echarts_4()
     echarts_5()
     echarts_6()
+
+    var myChart1;
+    var myChart2;
+    var myChart3;
+    var myChart4;
+    var myChart5;
+    var myChart6;
+
+    // 定义触发器
+    myChart1.on('click', function (params) {
+            console.log(params["name"]);
+            echarts_2("cityName", cityName = params["name"]) //品牌数量Top15
+            echarts_3("cityName", cityName = params["name"])
+            echarts_4("cityName", cityName = params["name"])
+            echarts_5("cityName", cityName = params["name"])
+            echarts_6("cityName", cityName = params["name"])
+            request_dataStatistics("cityName",params["name"])
+
+        }); //中国地图
+    myChart2.on('click', function (params) {
+            console.log(params);
+            map("brandName", brandName = params["name"]);
+            echarts_3("brandName", brandName = params["name"])
+            echarts_4("brandName", brandName = params["name"])
+            echarts_5("brandName", brandName = params["name"])
+            echarts_6("brandName", brandName = params["name"])
+            request_dataStatistics("brandName",params["name"])
+        });//品牌数量Top15
+    myChart3.getZr().on('click', function (params) {
+            console.log(params);
+        });//数量Top10的品牌酒店的均价
+    myChart4.on('click', function (params) {
+            console.log(params);
+            map("businessZoneName", businessZoneName = params["name"]);
+            echarts_2("businessZoneName", businessZoneName = params["name"])
+            echarts_3("businessZoneName", businessZoneName = params["name"])
+            echarts_5("businessZoneName", businessZoneName = params["name"])
+            echarts_6("businessZoneName", businessZoneName = params["name"])
+            request_dataStatistics("businessZoneName",params["name"])
+
+        });//商圈Top8
+    myChart5.on('click', function (params) {
+            console.log(params);
+            map("grade", grade = params["name"]);
+            echarts_2("grade", grade = params["name"])
+            echarts_3("grade", grade = params["name"])
+            echarts_4("grade", grade = params["name"])
+            echarts_6("grade", grade = params["name"])
+            request_dataStatistics("grade",params["name"])
+
+        });//星级占比
+    myChart6.on('click', function (params) {
+            console.log(params);
+        });//设施配备
     //请求统计信息
     function request_dataStatistics(keys,values) {
         $.ajax({
@@ -43,24 +97,13 @@ $(function () {
     //中国地图
     function map(keys = "", condition = "全国") {
         // 基于准备好的dom，初始化echarts实例
-        var myChart = echarts.init(document.getElementById('map'));
+        myChart1 = echarts.init(document.getElementById('map'));
         if (condition == "全国") {
             request_map("/map")//默认全国
         } else {
             url = "/map?" + keys + "=" + condition
             request_map(url)
         }
-        myChart.on('click', function (params) {
-            console.log(params["name"]);
-            echarts_2("cityName", cityName = params["name"]) //品牌数量Top15
-            echarts_3("cityName", cityName = params["name"])
-            echarts_4("cityName", cityName = params["name"])
-            echarts_5("cityName", cityName = params["name"])
-            echarts_6("cityName", cityName = params["name"])
-            request_dataStatistics("cityName",params["name"])
-
-        });
-
         function request_map(url) {
             $.ajax({
                 url: url,
@@ -167,7 +210,7 @@ $(function () {
 
                         ]
                     };
-                    myChart.setOption(option);
+                    myChart1.setOption(option);
                     window.addEventListener("resize", function () {
                         myChart.resize();
                     });
@@ -179,22 +222,14 @@ $(function () {
     //完成 品牌数量Top15
     function echarts_2(keys = "", condition = "全国") {
         // 基于准备好的dom，初始化echarts实例
-        var myChart = echarts.init(document.getElementById('echart2'));
+        myChart2 = echarts.init(document.getElementById('echart2'));
         if (condition == "全国") {
             request_brand("/brandTop")//默认全国
         } else {
             url = "/brandTop?" + keys + "=" + condition
             request_brand(url)
         }
-        myChart.on('click', function (params) {
-            console.log(params);
-            map("brandName", brandName = params["name"]);
-            echarts_3("brandName", brandName = params["name"])
-            echarts_4("brandName", brandName = params["name"])
-            echarts_5("brandName", brandName = params["name"])
-            echarts_6("brandName", brandName = params["name"])
-            request_dataStatistics("brandName",params["name"])
-        });
+
 
         function request_brand(url) {
             $.ajax({
@@ -262,7 +297,7 @@ $(function () {
                         }]
                     };
                     // 使用刚指定的配置项和数据显示图表。
-                    myChart.setOption(option);
+                    myChart2.setOption(option);
                     window.addEventListener("resize", function () {
                         myChart.resize();
                     });
@@ -274,16 +309,14 @@ $(function () {
     //数量Top10的品牌酒店的均价
     function echarts_3(keys = "", condition = "全国") {
         // 基于准备好的dom，初始化echarts实例
-        var myChart = echarts.init(document.getElementById('echart3'));
+        myChart3 = echarts.init(document.getElementById('echart3'));
         if (condition == "全国") {
             request_brandAvgPrice("/brandAvgPrice")//默认全国
         } else {
             url = "/brandAvgPrice?" + keys + "=" + condition
             request_brandAvgPrice(url)
         }
-        myChart.getZr().on('click', function (params) {
-            console.log(params);
-        });
+
 
         function request_brandAvgPrice(url) {
             $.ajax({
@@ -397,7 +430,7 @@ $(function () {
                         ]
                     };
                     // 使用刚指定的配置项和数据显示图表。
-                    myChart.setOption(option);
+                    myChart3.setOption(option);
                     window.addEventListener("resize", function () {
                         myChart.resize();
                     });
@@ -410,23 +443,14 @@ $(function () {
     //商圈Top8
     function echarts_4(keys = "", condition = "全国") {
         // 基于准备好的dom，初始化echarts实例
-        var myChart = echarts.init(document.getElementById('echart4'));
+        myChart4 = echarts.init(document.getElementById('echart4'));
         if (condition == "全国") {
             request_businessZone("/businessZone")//默认全国
         } else {
             url = "/businessZone?" + keys + "=" + condition
             request_businessZone(url)
         }
-        myChart.on('click', function (params) {
-            console.log(params);
-            map("businessZoneName", businessZoneName = params["name"]);
-            echarts_2("businessZoneName", businessZoneName = params["name"])
-            echarts_3("businessZoneName", businessZoneName = params["name"])
-            echarts_5("businessZoneName", businessZoneName = params["name"])
-            echarts_6("businessZoneName", businessZoneName = params["name"])
-            request_dataStatistics("businessZoneName",params["name"])
 
-        });
 
         function request_businessZone(url) {
             $.ajax({
@@ -520,7 +544,7 @@ $(function () {
 
 
                     // 使用刚指定的配置项和数据显示图表。
-                    myChart.setOption(option);
+                    myChart4.setOption(option);
                     window.addEventListener("resize", function () {
                         myChart.resize();
                     });
@@ -532,23 +556,14 @@ $(function () {
     //完成 星级占比
     function echarts_5(keys = "", condition = "全国") {
         // 基于准备好的dom，初始化echarts实例
-        var myChart = echarts.init(document.getElementById('echart5'));
+        myChart5 = echarts.init(document.getElementById('echart5'));
         if (condition == "全国") {
             request_grade("/grade")//默认全国
         } else {
             url = "/grade?" + keys + "=" + condition
             request_grade(url)
         }
-        myChart.on('click', function (params) {
-            console.log(params);
-            map("grade", grade = params["name"]);
-            echarts_2("grade", grade = params["name"])
-            echarts_3("grade", grade = params["name"])
-            echarts_4("grade", grade = params["name"])
-            echarts_6("grade", grade = params["name"])
-            request_dataStatistics("grade",params["name"])
 
-        });
 
         function request_grade(url) {
             $.ajax({
@@ -612,7 +627,7 @@ $(function () {
                             }
                         ]
                     };
-                    myChart.setOption(option);
+                    myChart5.setOption(option);
                     window.addEventListener("resize", function () {
                         myChart.resize();
                     });
@@ -626,16 +641,14 @@ $(function () {
     //完成 设施配备
     function echarts_6(keys = "", condition = "全国") {
         // 基于准备好的dom，初始化echarts实例
-        var myChart = echarts.init(document.getElementById('echart6'));
+        myChart6 = echarts.init(document.getElementById('echart6'));
         if (condition == "全国") {
             request_radar("/radar")//默认全国
         } else {
             url = "/radar?" + keys + "=" + condition
             request_radar(url)
         }
-        myChart.on('click', function (params) {
-            console.log(params);
-        });
+
 
         function request_radar(url) {
             $.ajax({
@@ -712,12 +725,10 @@ $(function () {
                             },]
                         },]
                     };
-                    myChart.setOption(option);
+                    myChart6.setOption(option);
                     window.addEventListener("resize", function () {
                         myChart.resize();
                     });
-
-
                 }
             });
         }
@@ -726,12 +737,12 @@ $(function () {
 
 
 
-		
-		
-		
 
 
-		
+
+
+
+
 
 
 

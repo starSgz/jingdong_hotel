@@ -100,15 +100,18 @@ def brandTop():
         if cityName in provinces:
             pd_data = pd_data[pd_data['province'].str.contains(cityName)]
         else:
-            pd_data = pd_data[pd_data['cityName'] == cityName]
+            pd_data = pd_data[pd_data['cityName'].str.contains(cityName)]
     if businessZoneName is not None:
         pd_data = pd_data[pd_data['businessZoneName'] == businessZoneName]
         print(pd_data)
     if grade is not None:
         pd_data = pd_data[pd_data['grade'] == grade]
         print(pd_data)
+    try:
+        brand_counts = pd_data.groupby('brandName').size().drop('其他').sort_values(ascending=False).head(15)
+    except KeyError:
+        brand_counts = pd_data.groupby('brandName').size().sort_values(ascending=False).head(15)
 
-    brand_counts = pd_data.groupby('brandName').size().drop('其他').sort_values(ascending=False).head(15)
     brand_dict = OrderedDict(brand_counts.items())
     response = json.dumps({'code': 200, 'data': brand_dict}, ensure_ascii=False, sort_keys=False)
     return response
@@ -128,7 +131,7 @@ def grade():
         if cityName in provinces:
             pd_data = pd_data[pd_data['province'].str.contains(cityName)]
         else:
-            pd_data = pd_data[pd_data['cityName'] == cityName]
+            pd_data = pd_data[pd_data['cityName'].str.contains(cityName)]
     if businessZoneName is not None:
         pd_data = pd_data[pd_data['businessZoneName'] == businessZoneName]
         print(pd_data)
@@ -197,7 +200,7 @@ def brandAvgPrice():
         if cityName in provinces:
             pd_data = pd_data[pd_data['province'].str.contains(cityName)]
         else:
-            pd_data = pd_data[pd_data['cityName'] == cityName]
+            pd_data = pd_data[pd_data['cityName'].str.contains(cityName)]
     if businessZoneName is not None:
         pd_data = pd_data[pd_data['businessZoneName'] == businessZoneName]
         print(pd_data)
@@ -235,7 +238,7 @@ def calculate_correlation():
         if cityName in provinces:
             pd_data = pd_data[pd_data['province'].str.contains(cityName)]
         else:
-            pd_data = pd_data[pd_data['cityName'] == cityName]
+            pd_data = pd_data[pd_data['cityName'].str.contains(cityName)]
     if brandName is not None:
         pd_data = pd_data[pd_data['brandName'] == brandName]
         print(pd_data)
@@ -265,7 +268,7 @@ def dataStatistics():
         if cityName in provinces:
             pd_data = pd_data[pd_data['province'].str.contains(cityName)]
         else:
-            pd_data = pd_data[pd_data['cityName'] == cityName]
+            pd_data = pd_data[pd_data['cityName'].str.contains(cityName)]
         screeningCondition = cityName
     if businessZoneName is not None:
         pd_data = pd_data[pd_data['businessZoneName'] == businessZoneName]
