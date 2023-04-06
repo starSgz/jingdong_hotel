@@ -2,6 +2,12 @@
     $(".loading").fadeOut()
 })
 $(function () {
+    //设置加载echarts样式
+    var echarts_load_open = {
+            text: '正在加载中...',
+            color: '#c23531',
+            maskColor: 'rgba(0, 0, 0, 0.2)',
+        }
     map();
     echarts_2()
     echarts_3() //数量Top10的品牌酒店的均价
@@ -98,6 +104,9 @@ $(function () {
     function map(keys = "", condition = "全国") {
         // 基于准备好的dom，初始化echarts实例
         myChart1 = echarts.init(document.getElementById('map'));
+        myChart1.showLoading(echarts_load_open);
+
+
         if (condition == "全国") {
             request_map("/map")//默认全国
         } else {
@@ -111,6 +120,7 @@ $(function () {
                 data: {},
                 dataType: 'JSON',
                 success: function (req) {
+                    myChart1.hideLoading();
                     console.log(req);
                     var data = req.data.data;
                     var geoCoordMap = req.data.geoCoordMap
@@ -223,6 +233,7 @@ $(function () {
     function echarts_2(keys = "", condition = "全国") {
         // 基于准备好的dom，初始化echarts实例
         myChart2 = echarts.init(document.getElementById('echart2'));
+        myChart2.showLoading(echarts_load_open);
         if (condition == "全国") {
             request_brand("/brandTop")//默认全国
         } else {
@@ -238,6 +249,7 @@ $(function () {
                 data: "{}",
                 dataType: "JSON",
                 success: function (response) {
+                    myChart2.hideLoading();
                     var data = Object.values(response.data)
                     var titlename = Object.keys(response.data)
                     console.log(response.data)
@@ -310,6 +322,7 @@ $(function () {
     function echarts_3(keys = "", condition = "全国") {
         // 基于准备好的dom，初始化echarts实例
         myChart3 = echarts.init(document.getElementById('echart3'));
+        myChart3.showLoading(echarts_load_open);
         if (condition == "全国") {
             request_brandAvgPrice("/brandAvgPrice")//默认全国
         } else {
@@ -325,6 +338,7 @@ $(function () {
                 data: "{}",
                 dataType: "JSON",
                 success: function (response) {
+                    myChart3.hideLoading();
                     console.log(Object.keys(response.data))
                     option = {
                         tooltip: {
@@ -444,6 +458,7 @@ $(function () {
     function echarts_4(keys = "", condition = "全国") {
         // 基于准备好的dom，初始化echarts实例
         myChart4 = echarts.init(document.getElementById('echart4'));
+        myChart4.showLoading(echarts_load_open);
         if (condition == "全国") {
             request_businessZone("/businessZone")//默认全国
         } else {
@@ -459,6 +474,7 @@ $(function () {
                 data: "{}",
                 dataType: "JSON",
                 success: function (response) {
+                    myChart4.hideLoading();
                     var data = Object.values(response.data)
                     var titlename = Object.keys(response.data)
                     option = {
@@ -541,8 +557,6 @@ $(function () {
                         }]
                     };
                     console.log(response.data)
-
-
                     // 使用刚指定的配置项和数据显示图表。
                     myChart4.setOption(option);
                     window.addEventListener("resize", function () {
@@ -557,14 +571,13 @@ $(function () {
     function echarts_5(keys = "", condition = "全国") {
         // 基于准备好的dom，初始化echarts实例
         myChart5 = echarts.init(document.getElementById('echart5'));
+        myChart5.showLoading(echarts_load_open);
         if (condition == "全国") {
             request_grade("/grade")//默认全国
         } else {
             url = "/grade?" + keys + "=" + condition
             request_grade(url)
         }
-
-
         function request_grade(url) {
             $.ajax({
                 type: "GET",
@@ -572,6 +585,7 @@ $(function () {
                 data: "{}",
                 dataType: "JSON",
                 success: function (response) {
+                    myChart5.hideLoading();
                     option = {
                         legend: {
                             orient: 'vertical',
@@ -629,7 +643,7 @@ $(function () {
                     };
                     myChart5.setOption(option);
                     window.addEventListener("resize", function () {
-                        myChart.resize();
+                        myChart5.resize();
                     });
                 }
 
@@ -642,13 +656,13 @@ $(function () {
     function echarts_6(keys = "", condition = "全国") {
         // 基于准备好的dom，初始化echarts实例
         myChart6 = echarts.init(document.getElementById('echart6'));
+        myChart6.showLoading(echarts_load_open);
         if (condition == "全国") {
             request_radar("/radar")//默认全国
         } else {
             url = "/radar?" + keys + "=" + condition
             request_radar(url)
         }
-
 
         function request_radar(url) {
             $.ajax({
@@ -657,6 +671,7 @@ $(function () {
                 data: "{}",
                 dataType: "JSON",
                 success: function (response) {
+                    myChart6.hideLoading();
                     const names = response.data.map(item => item[0]);
                     option = {
                         tooltip: {
